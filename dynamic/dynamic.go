@@ -23,15 +23,15 @@ sumRange(0, 5) -> -3
 */
 type NumArray struct {
 	SumInd []int
-	Node []int
+	Node   []int
 }
 
 func ConstructorNumArray(nums []int) NumArray {
 	tempSum := 0
 	res := NumArray{}
-	res.SumInd = make([]int,len(nums))
-	res.Node = make([]int,len(nums))
-	for ind,v:=range nums{
+	res.SumInd = make([]int, len(nums))
+	res.Node = make([]int, len(nums))
+	for ind, v := range nums {
 		res.Node[ind] = v
 		tempSum = tempSum + v
 		res.SumInd[ind] = tempSum
@@ -40,9 +40,8 @@ func ConstructorNumArray(nums []int) NumArray {
 }
 
 func (this *NumArray) SumRange(i int, j int) int {
-	return this.SumInd[j]-this.SumInd[i] + this.Node[i]
+	return this.SumInd[j] - this.SumInd[i] + this.Node[i]
 }
-
 
 /*问题*/
 /*
@@ -68,9 +67,9 @@ func (this *NumArray) SumRange(i int, j int) int {
 位置[i,j]的上一步只能是来自于它的上方或者左方（假设上方和左方存在,不存在就忽略）
 min[i,j] = min(min[i-1,j],min[i,j-1]) + v[i,j]
 */
-func getMinLastStep(minSumArr [][]int,row int,col int) int{
+func getMinLastStep(minSumArr [][]int, row int, col int) int {
 	if row == 0 {
-		if col == 0{
+		if col == 0 {
 			return 0
 		}
 		return minSumArr[row][col-1]
@@ -79,18 +78,18 @@ func getMinLastStep(minSumArr [][]int,row int,col int) int{
 		return minSumArr[row-1][col]
 	}
 
-	if minSumArr[row-1][col] <= minSumArr[row][col-1]{
+	if minSumArr[row-1][col] <= minSumArr[row][col-1] {
 		return minSumArr[row-1][col]
 	}
 	return minSumArr[row][col-1]
 }
 
 func MinPathSum(grid [][]int) int {
-	minSumArr := make([][]int,len(grid))
-	for rowInd,arr := range grid{
-		minSumArr[rowInd] = make([]int,len(arr))
-		for colInd,v := range arr {
-			minSumArr[rowInd][colInd] = getMinLastStep(minSumArr,rowInd,colInd) + v
+	minSumArr := make([][]int, len(grid))
+	for rowInd, arr := range grid {
+		minSumArr[rowInd] = make([]int, len(arr))
+		for colInd, v := range arr {
+			minSumArr[rowInd][colInd] = getMinLastStep(minSumArr, rowInd, colInd) + v
 		}
 	}
 	return minSumArr[len(minSumArr)-1][len(minSumArr[0])-1]
