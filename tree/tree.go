@@ -55,7 +55,7 @@ func CoustructCompleteTree(nums []int) (root *TreeNode) {
 		}
 		if (i * 2) < length {
 			right := &TreeNode{
-				Val: nums[2*i-1],
+				Val: nums[2*i],
 			}
 			curPos.Right = right
 			tempList.PushBack(right)
