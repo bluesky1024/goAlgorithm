@@ -1,9 +1,69 @@
 package tree
 
+import (
+	"container/list"
+	"fmt"
+)
+
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
 	Right *TreeNode
+}
+
+func (t *TreeNode) MidPrint() {
+	if t == nil {
+		return
+	}
+	fmt.Println(t.Val)
+	t.Left.MidPrint()
+	t.Right.MidPrint()
+	return
+}
+
+/*问题*/
+/*
+给定一个数组，求其以顺序存储方式构成的完全二叉树
+*/
+/*思路*/
+/*
+每一层的每个节点都依次设置左右节点
+每设置一个节点，将该节点存入list
+从上往下，从左往右设置节点
+*/
+func CoustructCompleteTree(nums []int) (root *TreeNode) {
+	length := len(nums)
+	if length == 0 {
+		return nil
+	}
+	root = &TreeNode{
+		Val: nums[0],
+	}
+
+	tempList := list.New()
+	tempList.PushBack(root)
+	for i := 1; i <= length/2; i++ {
+		curPos := tempList.Front().Value.(*TreeNode)
+		fmt.Println("curPos", curPos.Val)
+		fmt.Println("ind", 2*i-1, 2*i)
+		if (i*2 - 1) < length {
+			left := &TreeNode{
+				Val: nums[2*i-1],
+			}
+			curPos.Left = left
+			tempList.PushBack(left)
+		}
+		if (i * 2) < length {
+			right := &TreeNode{
+				Val: nums[2*i-1],
+			}
+			curPos.Right = right
+			tempList.PushBack(right)
+		}
+		tempList.Remove(tempList.Front())
+	}
+
+	return root
 }
 
 /*问题*/

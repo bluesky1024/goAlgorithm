@@ -1,6 +1,8 @@
 package tree
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFlatten(t *testing.T) {
 	root := &TreeNode{
@@ -23,4 +25,10 @@ func TestFlatten(t *testing.T) {
 	}
 
 	Flatten(root)
+}
+
+func TestCoustructCompleteTree(t *testing.T) {
+	nums := []int{4, 1, 3, 2, 16, 9, 10, 14, 8, 7}
+	root := CoustructCompleteTree(nums)
+	root.MidPrint()
 }
