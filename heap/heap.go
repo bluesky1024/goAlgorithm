@@ -1,8 +1,8 @@
 package heap
 
 import (
-	"container/list"
-	"crypto/aes"
+	"container/heap"
+	"math"
 )
 
 /*
@@ -61,6 +61,7 @@ kthLargest.add(4);   // returns 8
 若比堆根大，则将堆根pop，并将该元素push进堆，然后调整成正常最小堆
 */
 type KthLargest struct {
+	temp  heap.Interface
 	k     int
 	len   int
 	kHeap []int
@@ -86,22 +87,56 @@ func (k *KthLargest) push(v int) {
 		ind := k.len
 		k.kHeap[k.len] = v
 		for {
-			if
+			indP := int(math.Floor(float64(ind / 2)))
+			if k.kHeap[ind] < k.kHeap[indP] {
+				k.kHeap[ind], k.kHeap[indP] = k.kHeap[indP], k.kHeap[ind]
+				ind = indP
+			}
+			if indP == 0 {
+				break
+			}
 		}
 
 		return
 	}
 
 	//比较第0个和v的大小
-	if k.kHeap[0] >= v{
+	if k.kHeap[0] >= v {
 		return
 	}
+
+	//将第0个数换成新push的数，从上往下调整
+	k.kHeap[0] = v
+	ind := 0
+	for {
+		indL := 2 * ind
+		indR := 2*ind + 1
+		if indL < k.len {
+			if indR < k.len {
+				if v > k.kHeap[indL] {
+					k.kHeap[indL], v = v, k.kHeap[indL]
+					ind = indL
+					continue
+				}
+				if v > k.kHeap[indR] {
+					k.kHeap[indR], v = v, k.kHeap[indR]
+					ind = indR
+					continue
+				}
+			} else {
+				if v > k.kHeap[indL] {
+					k.kHeap[indL], v = v, k.kHeap[indL]
+					ind = indL
+					continue
+				}
+			}
+		}
+		break
+	}
+	return
 }
 
-func (k *KthLargest) getKthLargest() {
-
-}
-
-func (this *KthLargest) Add(val int) int {
-
+func (this *KthLargest) Add(v int) int {
+	this.push(v)
+	return this.kHeap[0]
 }
