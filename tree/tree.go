@@ -11,14 +11,142 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func (t *TreeNode) MidPrint() {
+func (t *TreeNode) PrePrintRecursion() {
 	if t == nil {
 		return
 	}
 	fmt.Println(t.Val)
-	t.Left.MidPrint()
-	t.Right.MidPrint()
+	t.Left.PrePrintRecursion()
+	t.Right.PrePrintRecursion()
 	return
+}
+
+func (t *TreeNode) MidPrintRecursion() {
+	if t == nil {
+		return
+	}
+	t.Left.MidPrintRecursion()
+	fmt.Println(t.Val)
+	t.Right.MidPrintRecursion()
+	return
+}
+
+func (t *TreeNode) PostPrintRecursion() {
+	if t == nil {
+		return
+	}
+	t.Left.PostPrintRecursion()
+	t.Right.PostPrintRecursion()
+	fmt.Println(t.Val)
+	return
+}
+
+func (t *TreeNode) PrePrint() {
+	cur := t
+	tempList := list.New()
+	for cur != nil || tempList.Len() != 0 {
+		for cur != nil {
+			fmt.Println(cur.Val)
+			tempList.PushBack(cur)
+			cur = cur.Left
+		}
+		if tempList.Len() != 0 {
+			cur = tempList.Back().Value.(*TreeNode)
+			tempList.Remove(tempList.Back())
+			cur = cur.Right
+		}
+	}
+}
+
+func (t *TreeNode) MidPrint() {
+	cur := t
+	tempList := list.New()
+	for cur != nil || tempList.Len() != 0 {
+		for cur != nil {
+			tempList.PushBack(cur)
+			cur = cur.Left
+		}
+		if tempList.Len() != 0 {
+			cur = tempList.Back().Value.(*TreeNode)
+			tempList.Remove(tempList.Back())
+			fmt.Println(cur.Val)
+			cur = cur.Right
+		}
+	}
+}
+
+func (t *TreeNode) PostPrint() {
+	if t == nil {
+		return
+	}
+	cur := t
+	tempList := list.New()
+	tempList.PushBack(cur)
+	var LastPos *TreeNode
+	for tempList.Len() != 0 {
+		cur = tempList.Back().Value.(*TreeNode)
+		//1.左右节点均为空；2.右节点为空，左节点已经访问过;3.右节点已经访问过 => 则可以访问当前节点
+		if (cur.Left == nil && cur.Right == nil) || (cur.Right == nil && LastPos == cur.Left) || LastPos == cur.Right {
+			fmt.Println(cur.Val)
+			LastPos = cur
+			tempList.Remove(tempList.Back())
+			continue
+		}
+
+		if cur.Right != nil {
+			tempList.PushBack(cur.Right)
+		}
+		if cur.Left != nil {
+			tempList.PushBack(cur.Left)
+		}
+	}
+}
+
+/*根据先序遍历和中序遍历重构二叉树，没有检错...*/
+func ConstructTreeByPreAndMid(preNums []int, midNums []int) (root *TreeNode) {
+	length := len(preNums)
+	if length == 0 {
+		return nil
+	}
+	root = &TreeNode{
+		Val: preNums[0],
+	}
+	midInd := -1
+	for i, v := range midNums {
+		if v == preNums[0] {
+			midInd = i
+			break
+		}
+		if i == len(midNums) {
+			return nil
+		}
+	}
+
+	var lPre []int
+	var lMid []int
+	var rPre []int
+	var rMid []int
+	emptyNums := make([]int, 0)
+	if midInd == 0 {
+		lPre = emptyNums
+		lMid = emptyNums
+	} else {
+		lPre = preNums[1 : 1+midInd]
+		lMid = midNums[0:midInd]
+	}
+
+	if length == midInd+1 {
+		rPre = emptyNums
+		rMid = emptyNums
+	} else {
+		rPre = preNums[midInd+1:]
+		rMid = midNums[midInd+1:]
+	}
+
+	root.Left = ConstructTreeByPreAndMid(lPre, lMid)
+	root.Right = ConstructTreeByPreAndMid(rPre, rMid)
+
+	return root
 }
 
 /*问题*/
@@ -44,8 +172,6 @@ func CoustructCompleteTree(nums []int) (root *TreeNode) {
 	tempList.PushBack(root)
 	for i := 1; i <= length/2; i++ {
 		curPos := tempList.Front().Value.(*TreeNode)
-		fmt.Println("curPos", curPos.Val)
-		fmt.Println("ind", 2*i-1, 2*i)
 		if (i*2 - 1) < length {
 			left := &TreeNode{
 				Val: nums[2*i-1],
