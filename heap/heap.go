@@ -1,7 +1,6 @@
 package heap
 
 import (
-	"container/heap"
 	"math"
 )
 
@@ -19,10 +18,8 @@ import (
 1.索引为i的left索引是(2*i)
 2.索引为i的right索引是(2*i+1)
 3.索引为i的父节点索引是floor(i/2)
-
 最大堆：父结点的键值总是大于或等于任何一个子节点的键值
 最小堆：父结点的键值总是小于或等于任何一个子节点的键值
-
 最大堆维护方法：
 新增：
 1.将新增数据置于数组尾部
@@ -36,11 +33,8 @@ import (
 /*问题*/
 /*
 设计一个找到数据流中第K大元素的类（class）。注意是排序后的第K大元素，不是第K个不同的元素。
-
 你的 KthLargest 类需要一个同时接收整数 k 和整数数组nums 的构造器，它包含数据流中的初始元素。每次调用 KthLargest.add，返回当前数据流中第K大的元素。
-
 示例:
-
 int k = 3;
 int[] arr = [4,5,8,2];
 KthLargest kthLargest = new KthLargest(3, arr);
@@ -61,7 +55,6 @@ kthLargest.add(4);   // returns 8
 若比堆根大，则将堆根pop，并将该元素push进堆，然后调整成正常最小堆
 */
 type KthLargest struct {
-	temp  heap.Interface
 	k     int
 	len   int
 	kHeap []int
@@ -71,6 +64,11 @@ func Constructor(k int, nums []int) KthLargest {
 	res := KthLargest{
 		k:     k,
 		kHeap: make([]int, k),
+	}
+	var intMax = int(^uint(0) >> 1)
+	var intMin = ^intMax
+	for i := range res.kHeap {
+		res.kHeap[i] = intMin
 	}
 	for _, v := range nums {
 		res.push(v)
@@ -83,11 +81,17 @@ func (k *KthLargest) pop() {
 }
 
 func (k *KthLargest) push(v int) {
+	if k.len == 0 {
+		k.kHeap[0] = v
+		k.len++
+		return
+	}
 	if k.len < k.k {
 		ind := k.len
 		k.kHeap[k.len] = v
+		k.len++
 		for {
-			indP := int(math.Floor(float64(ind / 2)))
+			indP := int(math.Floor(float64((ind - 1) / 2)))
 			if k.kHeap[ind] < k.kHeap[indP] {
 				k.kHeap[ind], k.kHeap[indP] = k.kHeap[indP], k.kHeap[ind]
 				ind = indP
@@ -109,17 +113,28 @@ func (k *KthLargest) push(v int) {
 	k.kHeap[0] = v
 	ind := 0
 	for {
-		indL := 2 * ind
-		indR := 2*ind + 1
+		indL := 2*ind + 1
+		indR := 2*ind + 2
 		if indL < k.len {
 			if indR < k.len {
+				//如果v 同时大于 l和r，从两者中选较小的互换
 				if v > k.kHeap[indL] {
-					k.kHeap[indL], v = v, k.kHeap[indL]
-					ind = indL
+					if v > k.kHeap[indR] {
+						if k.kHeap[indL] >= k.kHeap[indR] {
+							k.kHeap[indR], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indR]
+							ind = indR
+						} else {
+							k.kHeap[indL], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indL]
+							ind = indL
+						}
+					} else {
+						k.kHeap[indL], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indL]
+						ind = indL
+					}
 					continue
 				}
 				if v > k.kHeap[indR] {
-					k.kHeap[indR], v = v, k.kHeap[indR]
+					k.kHeap[indR], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indR]
 					ind = indR
 					continue
 				}
