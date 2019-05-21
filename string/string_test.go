@@ -26,3 +26,7 @@ func TestMultiply(t *testing.T) {
 	num2 := "33"
 	fmt.Println(Multiply(num1, num2))
 }
+
+func TestAmbiguousCoordinates(t *testing.T) {
+	fmt.Println(AmbiguousCoordinates("(123)"))
+}
