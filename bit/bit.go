@@ -1,5 +1,7 @@
 package bit
 
+import "fmt"
+
 /*问题*/
 /*
 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
@@ -50,50 +52,82 @@ func HammingDistance(x int, y int) int {
 
 /*问题*/
 /*
-二进制手表顶部有 4 个 LED 代表小时（0-11），底部的 6 个 LED 代表分钟（0-59）。
+给定一个正整数，输出它的补数。补数是对该数的二进制表示取反。
 
-每个 LED 代表一个 0 或 1，最低位在右侧。
+注意:
 
-8 4 2 1
+给定的整数保证在32位带符号整数的范围内。
+你可以假定二进制数不包含前导零位。
+示例 1:
 
-32 16 8 4 2 1
+输入: 5
+输出: 2
+解释: 5的二进制表示为101（没有前导零位），其补数为010。所以你需要输出2。
+示例 2:
 
-
-例如，上面的二进制手表读取 “3:25”。
-
-给定一个非负整数 n 代表当前 LED 亮着的数量，返回所有可能的时间。
-
-案例:
-
-输入: n = 1
-返回: ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]
-
-
-注意事项:
-
-输出的顺序没有要求。
-小时不会以零开头，比如 “01:00” 是不允许的，应为 “1:00”。
-分钟必须由两位数组成，可能会以零开头，比如 “10:2” 是无效的，应为 “10:02”。
+输入: 1
+输出: 0
+解释: 1的二进制表示为1（没有前导零位），其补数为0。所以你需要输出0。
 */
 /*思路*/
 /*
-合法检测：上行0-11，下行0-59
-n个点怎么分配？
-n1+n2=n;n1:0-3;n2:0-5
+逐位处理
 */
-//func getHour(num int) []string {
-//	hourMap := make([])
-//}
-//
-//func getMinute(num int) []string {
-//
-//}
-//func ReadBinaryWatch(num int) []string {
-//	if num > 8 || num < 0 {
-//		return nil
-//	}
-//
-//	for i := 0; i <= 3; i++ {
-//
-//	}
-//}
+func FindComplement(num int) int {
+	var res int = 0
+	ind := 0
+	for {
+		//不考虑num==0
+		if num == 0 {
+			break
+		}
+		temp := (1 - num%2)
+		for i := 0; i < ind; i++ {
+			temp = temp * 2
+		}
+
+		res = res + temp
+		ind++
+		fmt.Println(num%2, num, res)
+		num = num / 2
+	}
+	return res
+}
+
+/*问题*/
+/*
+所有 DNA 由一系列缩写为 A，C，G 和 T 的核苷酸组成，例如：“ACGAATTCCG”。在研究 DNA 时，识别 DNA 中的重复序列有时会对研究非常有帮助。
+
+编写一个函数来查找 DNA 分子中所有出现超多一次的10个字母长的序列（子串）。
+
+示例:
+
+输入: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+
+输出: ["AAAAACCCCC", "CCCCCAAAAA"]
+*/
+/*思路*/
+/*
+10个字母一组计算hash值
+以字母序列为key，是否进入res为value,构建map
+*/
+func FindRepeatedDnaSequences(s string) []string {
+	var res []string
+	length := len(s)
+	if length <= 10 {
+		return res
+	}
+	tempMap := make(map[string]bool, length-10)
+	for i := 0; i <= length-10; i++ {
+		if v, ok := tempMap[s[i:i+10]]; ok {
+			if v {
+				continue
+			}
+			res = append(res, string(s[i:i+10]))
+			tempMap[s[i:i+10]] = true
+			continue
+		}
+		tempMap[s[i:i+10]] = false
+	}
+	return res
+}
