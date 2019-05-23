@@ -9,6 +9,7 @@ func SelectSort(nums []int) []int {
 	for i := 0; i < length; i++ {
 		maxInd := i
 		tempMax := nums[i]
+		fmt.Println(nums)
 		for j := i + 1; j < length; j++ {
 			cnt2++
 			if tempMax < nums[j] {
@@ -29,6 +30,7 @@ func BubbleSort(nums []int) []int {
 	cnt1 := 0
 	cnt2 := 0
 	for i := 0; i < length; i++ {
+		fmt.Println(nums)
 		for j := 0; j < ind-1; j++ {
 			cnt2++
 			if nums[j] < nums[j+1] {
@@ -42,8 +44,25 @@ func BubbleSort(nums []int) []int {
 	return nums
 }
 
-func QuickSort(nums []int, sInd int, eInd int) {
-
+func QuickSort(nums []int) {
+	if len(nums) <= 1 {
+		return
+	}
+	mid, i := nums[0], 1
+	head, tail := 0, len(nums)-1
+	for head < tail {
+		if nums[i] < mid {
+			nums[i], nums[tail] = nums[tail], nums[i]
+			tail--
+		} else {
+			nums[i], nums[head] = nums[head], nums[i]
+			head++
+			i++
+		}
+	}
+	nums[head] = mid
+	QuickSort(nums[:head])
+	QuickSort(nums[head+1:])
 }
 
 func MergeSort(nums []int) {
