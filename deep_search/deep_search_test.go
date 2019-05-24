@@ -10,3 +10,7 @@ func TestCanVisitAllRooms(t *testing.T) {
 	res := CanVisitAllRooms(rooms)
 	fmt.Println(res)
 }
+
+func TestFindRotateSteps(t *testing.T) {
+
+}

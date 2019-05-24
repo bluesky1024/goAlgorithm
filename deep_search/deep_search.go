@@ -1,7 +1,9 @@
 package deep_search
 
 import (
+	"fmt"
 	"math"
+	"sync"
 )
 
 /*问题*/
@@ -89,46 +91,46 @@ func CanVisitAllRooms(rooms [][]int) bool {
 取步数最少的结果
 */
 func chooseOneStep(ringLength int, keyLength int, ring string, key string, curPos int, curInd, curStepCnt int, curMin *int) {
-	//if ring[curPos] == key[curInd] {
-	//	if curInd == keyLength-1 {
-	//		if *curMin == -1 {
-	//			*curMin = curStepCnt
-	//		} else {
-	//			if *curMin > curStepCnt {
-	//				*curMin = curStepCnt
-	//			}
-	//		}
-	//	} else {
-	//		curInd++
-	//		chooseOneStep(ringLength, keyLength, ring, key, curPos, curInd, curStepCnt, curMin)
-	//	}
-	//	return
-	//}
-	for i := 0; i < ringLength; i++ {
-		if ring[i] == key[curInd] {
-			tempStep1 := math.Abs(float64(curPos - i))
-			tempStep2 := float64(ringLength) - math.Abs(float64(curPos-i))
-			curPos = i
-			//if tempStep1 <= tempStep2 {
-			//	curStepCnt += tempStep1
-			//} else {
-			//	curStepCnt += tempStep2
-			//}
-			curStepCnt += int(math.Min(tempStep1, tempStep2))
-			if curInd == keyLength-1 {
-				if *curMin == -1 {
-					*curMin = curStepCnt
-				} else {
-					if *curMin > curStepCnt {
-						*curMin = curStepCnt
-					}
-				}
+	fmt.Println(curInd)
+	if ring[curPos] == key[curInd] {
+		if curInd == keyLength-1 {
+			if *curMin == -1 {
+				*curMin = curStepCnt
 			} else {
-				curInd++
-				chooseOneStep(ringLength, keyLength, ring, key, curPos, curInd, curStepCnt, curMin)
+				if *curMin > curStepCnt {
+					*curMin = curStepCnt
+				}
 			}
+		} else {
+			chooseOneStep(ringLength, keyLength, ring, key, curPos, curInd+1, curStepCnt, curMin)
 		}
+		return
 	}
+	wg := sync.WaitGroup{}
+	for i := 0; i < ringLength; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			if ring[i] == key[curInd] {
+				tempStep1 := math.Abs(float64(curPos - i))
+				tempStep2 := float64(ringLength) - math.Abs(float64(curPos-i))
+				tempCurStepCnt := curStepCnt + int(math.Min(tempStep1, tempStep2))
+				if curInd == keyLength-1 {
+					if *curMin == -1 {
+						*curMin = tempCurStepCnt
+					} else {
+						if *curMin > tempCurStepCnt {
+							fmt.Println(tempCurStepCnt)
+							*curMin = tempCurStepCnt
+						}
+					}
+				} else {
+					chooseOneStep(ringLength, keyLength, ring, key, i, curInd+1, tempCurStepCnt, curMin)
+				}
+			}
+		}(i)
+	}
+	wg.Wait()
 }
 func FindRotateSteps(ring string, key string) int {
 	ringLength := len(ring)
