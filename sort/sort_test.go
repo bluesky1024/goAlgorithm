@@ -25,3 +25,11 @@ func TestQuickSort(t *testing.T) {
 	QuickSort(nums)
 	fmt.Println(nums)
 }
+
+func TestMergeSort(t *testing.T) {
+	//nums := []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 10}
+	nums := []int{4, 2, 7, 3, 1, 6, 11}
+	//nums := []int{2, 1}
+	res := MergeSort(nums)
+	fmt.Println(nums, res)
+}
