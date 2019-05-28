@@ -65,6 +65,37 @@ func QuickSort(nums []int) {
 	QuickSort(nums[head+1:])
 }
 
-func MergeSort(nums []int) {
-
+/*
+归并排序是稳定排序
+时间复杂度O(nlogn)。为什么这么快？
+n/2 + n/2 merge to n , 比较n次
+分组粒度到1，n可分为logn/log2组
+4->2 + 2->1+1 + 1+1
+*/
+func MergeSort(r []int) []int {
+	length := len(r)
+	if length <= 1 {
+		return r
+	}
+	num := length / 2
+	fmt.Println(num)
+	left := MergeSort(r[:num])
+	right := MergeSort(r[num:])
+	return merge(left, right)
+}
+func merge(left, right []int) (result []int) {
+	fmt.Println(left, right)
+	l, r := 0, 0
+	for l < len(left) && r < len(right) {
+		if left[l] < right[r] {
+			result = append(result, left[l])
+			l++
+		} else {
+			result = append(result, right[r])
+			r++
+		}
+	}
+	result = append(result, left[l:]...)
+	result = append(result, right[r:]...)
+	return
 }
