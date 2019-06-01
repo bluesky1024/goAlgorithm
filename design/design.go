@@ -219,76 +219,77 @@ hashMap.get(2);            // 返回 -1 (未找到)
 */
 /*思路*/
 /*
+1
 直观来看，首先想到的是取模，数据存在则往后顺延
-因为操作的总数<=1w，直接建立1w的数组，初始化为-1，如果出现碰撞则往后顺延，找到第一个不为-1的值
+因为操作的总数<=1w，直接建立1w的数组，初始化为0，如果出现碰撞则往后顺延，找到第一个不为0的值
+这种方案第一次提交出现问题，在于remove的for循环退出的条件不对，如果去除那个==0的条件，又会导致删除操作每次都要遍历整个map，效率简直低
+
+2
+建立二维数组吧
+第一层根据key进行hash
+第二层建立一个list
 */
 type SingleHashKV struct {
 	key int
 	val int
 }
 type MyHashMap struct {
-	hashMap []SingleHashKV
+	hashMap []*list.List
 }
 
 /** Initialize your data structure here. */
 func MyHashMapConstructor() MyHashMap {
 	return MyHashMap{
-		hashMap: make([]SingleHashKV, 10000),
+		hashMap: make([]*list.List, 10000),
 	}
 }
 
 /** value will always be non-negative. */
 func (this *MyHashMap) Put(key int, value int) {
-	temp := key
-	if key < 0 {
-		temp = temp * -1
+	ind := key % 10000
+	if this.hashMap[ind] == nil {
+		this.hashMap[ind] = list.New()
 	}
-	ind := temp % 10000
-	for this.hashMap[ind].key != key && this.hashMap[ind].key != 0 {
-		if ind == 9999 {
-			ind = 1
-			continue
+
+	//遍历整个list，如果存在该key，就更新，不存在就pushback
+	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+		if e.Value.(SingleHashKV).key == key {
+			e.Value = SingleHashKV{
+				key: key,
+				val: value,
+			}
+			return
 		}
-		ind++
 	}
-	this.hashMap[ind] = SingleHashKV{
+	this.hashMap[ind].PushBack(SingleHashKV{
 		key: key,
 		val: value,
-	}
+	})
 }
 
 /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
 func (this *MyHashMap) Get(key int) int {
-	temp := key
-	if key < 0 {
-		temp = temp * -1
+	ind := key % 10000
+	if this.hashMap[ind] == nil {
+		return -1
 	}
-	ind := temp % 10000
-	for this.hashMap[ind].key != key {
-		if this.hashMap[ind].key == 0 {
-			return -1
+	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+		if e.Value.(SingleHashKV).key == key {
+			return e.Value.(SingleHashKV).val
 		}
-		if ind == 9999 {
-			ind = 1
-			continue
-		}
-		ind++
 	}
-	return this.hashMap[ind].val
+	return -1
 }
 
 /** Removes the mapping of the specified value key if this map contains a mapping for the key */
 func (this *MyHashMap) Remove(key int) {
-	temp := key
-	if key < 0 {
-		temp = temp * -1
+	ind := key % 10000
+	if this.hashMap[ind] == nil {
+		return
 	}
-	ind := temp % 10000
-	for this.hashMap[ind].key != key {
-		if this.hashMap[ind].key == 0 {
-			return
+	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+		if e.Value.(SingleHashKV).key == key {
+			this.hashMap[ind].Remove(e)
 		}
-		ind++
 	}
-	this.hashMap[ind] = SingleHashKV{}
 }
