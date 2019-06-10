@@ -7,7 +7,7 @@ import (
 
 func TestTreeNode_Print(t *testing.T) {
 	nums := []int{4, 1, 3, 2, 16, 9, 10, 14, 8, 7}
-	root := CoustructCompleteTree(nums)
+	root := ConstructCompleteTree(nums)
 	root.MidPrint()
 }
 
@@ -47,6 +47,15 @@ func TestFlatten(t *testing.T) {
 
 func TestCoustructCompleteTree(t *testing.T) {
 	nums := []int{4, 1, 3, 2, 16, 9, 10, 14, 8, 7}
-	root := CoustructCompleteTree(nums)
+	root := ConstructCompleteTree(nums)
 	root.MidPrint()
+}
+
+func TestCoustructTreeInLevel(t *testing.T) {
+	nums := []int{10, 5, 15, 3, 7, -1, 18, 1, -1, 6, -1, -1, -1, 21, -1}
+	root := ConstructTreeInLevel(nums)
+	fmt.Println("mid print")
+	root.MidPrint()
+	fmt.Println("pre print")
+	root.PrePrint()
 }

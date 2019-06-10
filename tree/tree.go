@@ -159,7 +159,7 @@ func ConstructTreeByPreAndMid(preNums []int, midNums []int) (root *TreeNode) {
 每设置一个节点，将该节点存入list
 从上往下，从左往右设置节点
 */
-func CoustructCompleteTree(nums []int) (root *TreeNode) {
+func ConstructCompleteTree(nums []int) (root *TreeNode) {
 	length := len(nums)
 	if length == 0 {
 		return nil
@@ -184,6 +184,58 @@ func CoustructCompleteTree(nums []int) (root *TreeNode) {
 				Val: nums[2*i],
 			}
 			curPos.Right = right
+			tempList.PushBack(right)
+		}
+		tempList.Remove(tempList.Front())
+	}
+
+	return root
+}
+
+/*问题*/
+/*
+给定一个数组，[10,5,15,3,7,-1,18]，属于二叉树的层次遍历，其中-1表示该节点为null
+重构二叉树
+*/
+/*思路*/
+/*
+
+ */
+func ConstructTreeInLevel(nums []int) (root *TreeNode) {
+	length := len(nums)
+	if length == 0 {
+		return nil
+	}
+	root = &TreeNode{
+		Val: nums[0],
+	}
+
+	tempList := list.New()
+	tempList.PushBack(root)
+	for i := 1; i <= length/2; i++ {
+		curPos := tempList.Front().Value.(*TreeNode)
+		if (i*2 - 1) < length {
+			var left *TreeNode = nil
+			if nums[2*i-1] != -1 {
+				left = &TreeNode{
+					Val: nums[2*i-1],
+				}
+			}
+			if curPos != nil {
+				curPos.Left = left
+			}
+			tempList.PushBack(left)
+		}
+		if (i * 2) < length {
+			var right *TreeNode = nil
+			if nums[2*i] != -1 {
+				right = &TreeNode{
+					Val: nums[2*i],
+				}
+			}
+			if curPos != nil {
+				curPos.Right = right
+			}
 			tempList.PushBack(right)
 		}
 		tempList.Remove(tempList.Front())
@@ -356,39 +408,98 @@ func Flatten(root *TreeNode) {
 	return
 }
 
-//func midLoopAndSetNil(root *TreeNode, midArr []int) {
-//	if root == nil {
-//		return
-//	}
-//	midArr = append(midArr, root.Val)
-//	midLoopAndSetNil(root.Left, midArr)
-//	midLoopAndSetNil(root.Right, midArr)
-//	root.Left = nil
-//	root.Right = nil
-//	return
-//}
-//func flatten(root *TreeNode) {
-//	if root == nil {
-//		return
-//	}
-//	midArr := make([]int, 0)
-//	midLoopAndSetNil(root, midArr)
-//	fmt.Println(midArr)
-//
-//	//此时root指针只存在当前值
-//	var p *TreeNode = nil
-//	for i := 1; i < len(midArr); i++ {
-//		if i == 1 {
-//			p = &TreeNode{
-//				Val: midArr[i],
-//			}
-//			root.Right = p
-//		} else {
-//			p.Right = &TreeNode{
-//				Val: midArr[i],
-//			}
-//			p = p.Right
-//		}
-//	}
-//	return
-//}
+/*问题*/
+/*
+给定二叉搜索树的根结点 root，返回 L 和 R（含）之间的所有结点的值的和。
+
+二叉搜索树保证具有唯一的值。
+
+
+
+示例 1：
+
+输入：root = [10,5,15,3,7,null,18], L = 7, R = 15
+输出：32
+示例 2：
+
+输入：root = [10,5,15,3,7,13,18,1,null,6], L = 6, R = 10
+输出：23
+
+
+提示：
+
+树中的结点数量最多为 10000 个。
+最终的答案保证小于 2^31。
+*/
+/*思路*/
+/*
+最直接的思路，遍历二叉树，只要是>=7 && <=15的节点一定在L和R之间
+如果某节点<7,则该节点的左节点都不用遍历了
+如果某节点>15,则该节点的右节点都不用遍历了
+*/
+func rangeSumBST(root *TreeNode, L int, R int) int {
+	res := 0
+	if root == nil {
+		return res
+	}
+
+	if root.Val >= L && root.Val <= R {
+		res = res + root.Val
+		temp1 := rangeSumBST(root.Left, L, R)
+		temp2 := rangeSumBST(root.Right, L, R)
+		res = res + temp1 + temp2
+	} else if root.Val < L {
+		temp2 := rangeSumBST(root.Right, L, R)
+		res = res + temp2
+	} else if root.Val > R {
+		temp1 := rangeSumBST(root.Left, L, R)
+		res = res + temp1
+	}
+	return res
+}
+
+/*问题*/
+/*
+翻转一棵二叉树。
+
+示例：
+
+输入：
+
+     4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+输出：
+
+     4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+备注:
+这个问题是受到 Max Howell 的 原问题 启发的 ：
+
+谷歌：我们90％的工程师使用您编写的软件(Homebrew)，但是您却无法在面试时在白板上写出翻转二叉树这道题，这太糟糕了。
+*/
+/*思路*/
+/*
+1.从任意节点来看，其左右节点都经过了翻转
+2.从上至下，要翻转当前节点，先翻转当前节点的左右子节点
+3.构建递归，递归终止条件，某节点的左右子节点都为空，则不需要翻转，直接返回
+*/
+func invertTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+
+	invertTree(root.Left)
+	invertTree(root.Right)
+
+	temp := root.Left
+	root.Left = root.Right
+	root.Right = temp
+
+	return root
+}
