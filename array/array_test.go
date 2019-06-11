@@ -20,3 +20,8 @@ func TestSortedSquares(t *testing.T) {
 	nums := []int{-4, -1, 0, 3, 10}
 	fmt.Println(SortedSquares(nums))
 }
+
+func TestProductExceptSelf(t *testing.T) {
+	nums := []int{1, 2, 3, 4, 5}
+	fmt.Println(ProductExceptSelf(nums))
+}
