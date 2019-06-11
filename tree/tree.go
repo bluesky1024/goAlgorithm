@@ -487,7 +487,7 @@ func rangeSumBST(root *TreeNode, L int, R int) int {
 /*
 1.从任意节点来看，其左右节点都经过了翻转
 2.从上至下，要翻转当前节点，先翻转当前节点的左右子节点
-3.构建递归，递归终止条件，某节点的左右子节点都为空，则不需要翻转，直接返回
+3.构建递归，递归终止条件，某节点为空，则不需要翻转，直接返回
 */
 func invertTree(root *TreeNode) *TreeNode {
 	if root == nil {
