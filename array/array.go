@@ -1,5 +1,7 @@
 package array
 
+import "github.com/bluesky1024/goAlgorithm/sort"
+
 /*问题*/
 /*
 最基础的问题：给定已排序数组，二分法查指定val位置，或者最近的一个数的位置
@@ -217,5 +219,161 @@ func ProductExceptSelf(nums []int) []int {
 		res[i] = res[i] * temp
 	}
 
+	return res
+}
+
+/*问题*/
+/*
+学校在拍年度纪念照时，一般要求学生按照 非递减 的高度顺序排列。
+
+请你返回至少有多少个学生没有站在正确位置数量。该人数指的是：能让所有学生以 非递减 高度排列的必要移动人数。
+
+
+
+示例：
+
+输入：[1,1,4,2,1,3]
+输出：3
+解释：
+高度为 4、3 和最后一个 1 的学生，没有站在正确的位置。
+
+
+提示：
+
+1 <= heights.length <= 100
+1 <= heights[i] <= 100
+*/
+/*思路*/
+/*
+非递减：似乎就是全部相邻数据满足相等或递增
+先排序，排序数组跟原数组比较
+不相等就表示位置不对
+*/
+func HeightChecker(heights []int) int {
+	new_arr := append([]int{}, heights[:]...)
+	sort.QuickSort(new_arr)
+	length := len(new_arr)
+	res := 0
+	for i := 0; i < length; i++ {
+		if new_arr[i] != heights[i] {
+			res++
+		}
+	}
+	return res
+}
+
+/*问题*/
+/*
+给出两个图像 A 和 B ，A 和 B 为大小相同的二维正方形矩阵。（并且为二进制矩阵，只包含0和1）。
+
+我们转换其中一个图像，向左，右，上，或下滑动任何数量的单位，并把它放在另一个图像的上面。之后，该转换的重叠是指两个图像都具有 1 的位置的数目。
+
+（请注意，转换不包括向任何方向旋转。）
+
+最大可能的重叠是什么？
+
+示例 1:
+
+输入：A = [[1,1,0],
+          [0,1,0],
+          [0,1,0]]
+     B = [[0,0,0],
+          [0,1,1],
+          [0,0,1]]
+输出：3
+解释: 将 A 向右移动一个单位，然后向下移动一个单位。
+注意:
+
+1 <= A.length = A[0].length = B.length = B[0].length <= 30
+0 <= A[i][j], B[i][j] <= 1
+*/
+/*思路*/
+/*
+首先需要一个判断两个矩阵重合数的函数
+其实应该考虑矩阵变换公式，但我忘了，目前因为没有旋转操作，可直接水平垂直遍历
+*/
+func getOverlap(A [][]int, B [][]int, lengthRow int, lengthCol int, i int, j int) int {
+	res := 0
+	for ii := 0; ii < lengthCol; ii++ {
+		if ii+i < 0 {
+			continue
+		}
+		if ii+i >= lengthCol {
+			break
+		}
+		for jj := 0; jj < lengthRow; jj++ {
+			if jj+j < 0 {
+				continue
+			}
+			if jj+j >= lengthRow {
+				break
+			}
+			if A[ii+i][jj+j] == 1 && B[ii][jj] == 1 {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+func LargestOverlap(A [][]int, B [][]int) int {
+	lengthRow := len(A)
+	lengthCol := len(A[0])
+	max := 0
+	for i := (-1*lengthRow + 1); i < lengthRow; i++ {
+		for j := (-1*lengthCol + 1); j < lengthCol; j++ {
+			temp := getOverlap(A, B, lengthRow, lengthCol, i, j)
+			if temp > max {
+				max = temp
+			}
+		}
+	}
+	return max
+}
+
+/*问题*/
+/*
+ 在《英雄联盟》的世界中，有一个叫 “提莫” 的英雄，他的攻击可以让敌方英雄艾希（编者注：寒冰射手）进入中毒状态。现在，给出提莫对艾希的攻击时间序列和提莫攻击的中毒持续时间，你需要输出艾希的中毒状态总时长。
+
+你可以认为提莫在给定的时间点进行攻击，并立即使艾希处于中毒状态。
+
+示例1:
+
+输入: [1,4], 2
+输出: 4
+原因: 在第 1 秒开始时，提莫开始对艾希进行攻击并使其立即中毒。中毒状态会维持 2 秒钟，直到第 2 秒钟结束。
+在第 4 秒开始时，提莫再次攻击艾希，使得艾希获得另外 2 秒的中毒时间。
+所以最终输出 4 秒。
+示例2:
+
+输入: [1,2], 2
+输出: 3
+原因: 在第 1 秒开始时，提莫开始对艾希进行攻击并使其立即中毒。中毒状态会维持 2 秒钟，直到第 2 秒钟结束。
+但是在第 2 秒开始时，提莫再次攻击了已经处于中毒状态的艾希。
+由于中毒状态不可叠加，提莫在第 2 秒开始时的这次攻击会在第 3 秒钟结束。
+所以最终输出 3。
+注意：
+
+你可以假定时间序列数组的总长度不超过 10000。
+你可以假定提莫攻击时间序列中的数字和提莫攻击的中毒持续时间都是非负整数，并且不超过 10,000,000。
+*/
+/*思路*/
+/*
+1.记录中毒总秒数
+2.记录最近一次中毒有效期限
+3.再被毒，视清空更新中毒事件
+*/
+func findPoisonedDuration(timeSeries []int, duration int) int {
+	res := 0       //中毒秒数
+	timeValid := 0 //到该秒时间结束，都是中毒状态
+	for _, time := range timeSeries {
+		if timeValid == 0 || time > timeValid {
+			timeValid = time + duration - 1
+			res = res + duration
+			continue
+		}
+		res = res + time + duration - 1 - timeValid
+		timeValid = time + duration - 1
+	}
 	return res
 }
