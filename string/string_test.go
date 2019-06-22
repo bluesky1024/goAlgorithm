@@ -30,3 +30,7 @@ func TestMultiply(t *testing.T) {
 func TestAmbiguousCoordinates(t *testing.T) {
 	fmt.Println(AmbiguousCoordinates("(123)"))
 }
+
+func TestConvert(t *testing.T) {
+	fmt.Println(Convert("A", 1))
+}

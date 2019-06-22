@@ -327,3 +327,83 @@ func AmbiguousCoordinates(s string) []string {
 	}
 	return res
 }
+
+/*问题*/
+/*
+将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
+
+比如输入字符串为 "LEETCODEISHIRING" 行数为 3 时，排列如下：
+
+L   C   I   R
+E T O E S I I G
+E   D   H   N
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："LCIRETOESIIGEDHN"。
+
+请你实现这个将字符串进行指定行数变换的函数：
+
+string convert(string s, int numRows);
+示例 1:
+
+输入: s = "LEETCODEISHIRING", numRows = 3
+输出: "LCIRETOESIIGEDHN"
+示例 2:
+
+输入: s = "LEETCODEISHIRING", numRows = 4
+输出: "LDREOEIIECIHNTSG"
+解释:
+
+L     D     R
+E   O E   I I
+E C   I H   N
+T     S     G
+*/
+/*思路*/
+/*
+n=4
+
+0         6       12
+1     5   7    11 13
+2  4      8 10    14
+3         9       15
+
+首位两行
+v(i+1) = v(i) + 2(n-1)
+
+中间行
+偶数行
+v(i+1) = v(i) + 2(n-r)
+奇数行
+v(i+1) = v(i) + 2r
+
+
+*/
+func Convert(s string, numRows int) string {
+	if numRows == 1 {
+		return s
+	}
+	length := len(s)
+	newB := make([]byte, length)
+	var i int
+	ind := 0
+	for i = 0; i <= (numRows - 1); i++ {
+		temp := i
+		cnt := 1
+		for temp < length {
+			newB[ind] = s[temp]
+			ind++
+			if i == 0 || i == (numRows-1) {
+				temp = temp + 2*(numRows-1)
+			} else {
+				if cnt == 1 {
+					temp = temp + 2*(numRows-i) - 2
+					cnt = 2
+				} else {
+					temp = temp + 2*i
+					cnt = 1
+				}
+			}
+		}
+	}
+
+	return string(newB)
+}
