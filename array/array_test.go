@@ -25,3 +25,11 @@ func TestProductExceptSelf(t *testing.T) {
 	nums := []int{1, 2, 3, 4, 5}
 	fmt.Println(ProductExceptSelf(nums))
 }
+
+func TestFindInMountainArray(t *testing.T) {
+	nums := MountainArray{
+		Arr: []int{0, 5, 3, 1},
+	}
+	fmt.Println(FindMoutain(&nums, 0, nums.length()-1, nums.get(0), nums.get(nums.length()-1)))
+	fmt.Println(FindInMountainArray(1, &nums))
+}
