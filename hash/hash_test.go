@@ -25,3 +25,10 @@ func TestFourSum(t *testing.T) {
 	nums := []int{-3, -2, -1, 0, 0, 1, 2, 3}
 	fmt.Println(FourSum(nums, 0))
 }
+
+func TestShoppingOffers(t *testing.T) {
+	price := []int{2, 5}
+	gifts := [][]int{[]int{3, 0, 5}, []int{1, 2, 10}}
+	needs := []int{3, 2}
+	fmt.Println(ShoppingOffers(price, gifts, needs))
+}
