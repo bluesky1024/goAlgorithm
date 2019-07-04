@@ -33,3 +33,13 @@ func TestFindInMountainArray(t *testing.T) {
 	fmt.Println(FindMoutain(&nums, 0, nums.length()-1, nums.get(0), nums.get(nums.length()-1)))
 	fmt.Println(FindInMountainArray(1, &nums))
 }
+
+func TestMaxPoints(t *testing.T) {
+	points := [][]int{[]int{1, 1}, []int{1, 1}, []int{2, 3}}
+	//points := [][]int{[]int{1, 1}, []int{3, 2}, []int{5, 3}, []int{4, 1}, []int{2, 3}, []int{1, 4}}
+	fmt.Println(MaxPoints(points))
+}
+
+func TestIsUgly(t *testing.T) {
+	fmt.Println(IsUgly(7))
+}

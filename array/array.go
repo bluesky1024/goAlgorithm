@@ -523,3 +523,159 @@ func FindInMountainArray(target int, mountainArr *MountainArray) int {
 	}
 	return FindTargetInSort(false, mountainArr, midInd, right, midV, rightV, target)
 }
+
+/*问题*/
+/*
+给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+
+示例 1:
+
+输入: [[1,1],[2,2],[3,3]]
+输出: 3
+解释:
+^
+|
+|        o
+|     o
+|  o
++------------->
+0  1  2  3  4
+示例 2:
+
+输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+输出: 4
+解释:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6
+*/
+/*思路*/
+/*
+1.需要一个方法判断三个点共线，判断过程因为不能用分数，改成交叉相乘判断是否相等来判断共线
+2.遍历任意两点构成的直线覆盖了多少个点，统计max
+*/
+//判断是否三点共线
+func checkInLine(a []int, b []int, c []int) bool {
+	if a[0] == b[0] {
+		if a[0] == c[0] {
+			return true
+		}
+		return false
+	}
+	if a[0] == c[0] {
+		return false
+	}
+
+	if (a[0]-b[0])*(a[1]-c[1]) == (a[1]-b[1])*(a[0]-c[0]) {
+		return true
+	}
+	return false
+}
+
+//获取aInd,bInd构成的直线上的点个数
+func getPointInLineNum(aInd int, bInd int, points [][]int) int {
+	res := 2
+	for ind, point := range points {
+		if ind == aInd || ind == bInd {
+			continue
+		}
+		if (point[0] == points[aInd][0] && point[1] == points[aInd][1]) || (point[0] == points[bInd][0] && point[1] == points[bInd][1]) {
+			res++
+			continue
+		}
+		if checkInLine(points[aInd], points[bInd], point) {
+			res++
+		}
+	}
+	return res
+}
+
+//判断是否重复直线
+func checkRepeatLine(lines [][]int, aInd int, bInd int, points [][]int) bool {
+	for _, line := range lines {
+		if checkInLine(points[line[0]], points[line[1]], points[aInd]) && checkInLine(points[line[0]], points[line[1]], points[bInd]) {
+			return true
+		}
+	}
+	return false
+}
+
+func MaxPoints(points [][]int) int {
+	pointNum := len(points)
+	if pointNum <= 2 {
+		return pointNum
+	}
+
+	////存储已经遍历过的直线
+	//lines := make([][]int, 0)
+
+	max := 0
+	for i := 0; i < pointNum; i++ {
+		for j := i + 1; j < pointNum; j++ {
+			//if checkRepeatLine(lines, i, j, points) {
+			//	continue
+			//}
+			temp := getPointInLineNum(i, j, points)
+			if max < temp {
+				max = temp
+			}
+			//lines = append(lines, []int{i, j})
+		}
+	}
+	return max
+}
+
+/*问题*/
+/*
+编写一个程序判断给定的数是否为丑数。
+
+丑数就是只包含质因数 2, 3, 5 的正整数。
+
+示例 1:
+
+输入: 6
+输出: true
+解释: 6 = 2 × 3
+示例 2:
+
+输入: 8
+输出: true
+解释: 8 = 2 × 2 × 2
+示例 3:
+
+输入: 14
+输出: false
+解释: 14 不是丑数，因为它包含了另外一个质因数 7。
+说明：
+
+1 是丑数。
+输入不会超过 32 位有符号整数的范围: [−231,  231 − 1]。
+*/
+/*思路*/
+/*
+循环除2，3，5就完事了
+*/
+func IsUgly(num int) bool {
+	if num <= 0 {
+		return false
+	}
+
+	for num%2 == 0 {
+		num = num / 2
+	}
+	for num%3 == 0 {
+		num = num / 3
+	}
+	for num%5 == 0 {
+		num = num / 5
+	}
+	if num == 1 {
+		return true
+	}
+	return false
+}
