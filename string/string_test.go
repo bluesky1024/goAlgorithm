@@ -34,3 +34,26 @@ func TestAmbiguousCoordinates(t *testing.T) {
 func TestConvert(t *testing.T) {
 	fmt.Println(Convert("A", 1))
 }
+
+func TestReverseString(t *testing.T) {
+	s := []byte{'h', 'e', 'l', 'l', 'o'}
+	ReverseString(s)
+	fmt.Printf("%c", s)
+}
+
+func TestReverseWords(t *testing.T) {
+	s := "Let's take LeetCode contest"
+	fmt.Println(s[3:len(s)])
+	return
+	fmt.Println(ReverseWords(s))
+}
+
+func TestCheckPalindrome(t *testing.T) {
+	s := "a"
+	fmt.Println(CheckPalindrome([]byte(s)))
+}
+
+func TestCountSubstrings(t *testing.T) {
+	s := "aaa"
+	fmt.Println(CountSubstrings_v2(s))
+}

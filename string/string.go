@@ -407,3 +407,188 @@ func Convert(s string, numRows int) string {
 
 	return string(newB)
 }
+
+/*问题*/
+/*
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 char[] 的形式给出。
+
+不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+
+你可以假设数组中的所有字符都是 ASCII 码表中的可打印字符。
+
+
+
+示例 1：
+
+输入：["h","e","l","l","o"]
+输出：["o","l","l","e","h"]
+示例 2：
+
+输入：["H","a","n","n","a","h"]
+输出：["h","a","n","n","a","H"]
+*/
+/*思路*/
+/*
+毫无亮点，无非就是第i位与第length-i-1位互换，注意别换重了
+*/
+func ReverseString(s []byte) {
+	length := len(s)
+	mid := length / 2
+	for i := 0; i <= mid; i++ {
+		if i >= length-i-1 {
+			break
+		}
+		s[i], s[length-i-1] = s[length-i-1], s[i]
+	}
+	return
+}
+
+/*问题*/
+/*
+给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+
+示例 1:
+
+输入: "Let's take LeetCode contest"
+输出: "s'teL ekat edoCteeL tsetnoc"
+注意：在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+*/
+/*思路*/
+/*
+1.字符串转[]byte
+2.找到空格位置,根据空格位置对原字符串进行拆分
+3.[]byte转字符串
+*/
+func ReverseWords(s string) string {
+	byteArr := []byte(s)
+	spaceInd := -1
+	for i, ch := range byteArr {
+		if ch == ' ' {
+			temp := byteArr[spaceInd+1 : i]
+			ReverseString(temp)
+			spaceInd = i
+		}
+	}
+	temp := byteArr[spaceInd+1:]
+	ReverseString(temp)
+	return string(byteArr)
+}
+
+/*问题*/
+/*
+给定两个字符串，你需要从这两个字符串中找出最长的特殊序列。最长特殊序列定义如下：该序列为某字符串独有的最长子序列（即不能是其他字符串的子序列）。
+
+子序列可以通过删去字符串中的某些字符实现，但不能改变剩余字符的相对顺序。空序列为所有字符串的子序列，任何字符串为其自身的子序列。
+
+输入为两个字符串，输出最长特殊序列的长度。如果不存在，则返回 -1。
+
+示例 :
+
+输入: "aba", "cdc"
+输出: 3
+解析: 最长特殊序列可为 "aba" (或 "cdc")
+说明:
+
+两个字符串长度均小于100。
+字符串中的字符仅含有 'a'~'z'。
+*/
+/*思路*/
+/*
+这道题我没做出来，看了别人的解题思路
+感觉智商被按在地上摩擦了。。。
+两个字符串不相同,就是特殊,返回长的；相同就没有，返回-1；
+*/
+func FindLUSlength(a string, b string) int {
+	if a == b {
+		return -1
+	}
+	lengthA := len(a)
+	lengthB := len(b)
+	if lengthA > lengthB {
+		return lengthA
+	}
+	return lengthB
+}
+
+/*问题*/
+/*
+ */
+/*思路*/
+/*
+给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
+
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被计为是不同的子串。
+
+示例 1:
+
+输入: "abc"
+输出: 3
+解释: 三个回文子串: "a", "b", "c".
+示例 2:
+
+输入: "aaa"
+输出: 6
+说明: 6个回文子串: "a", "a", "a", "aa", "aa", "aaa".
+注意:
+
+输入的字符串长度不会超过1000。
+*/
+func CheckPalindrome(s []byte) bool {
+	length := len(s)
+	mid := length / 2
+	for i := 0; i <= mid; i++ {
+		if s[i] != s[length-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func CountSubstrings_v1(s string) int {
+	byteS := []byte(s)
+	length := len(s)
+	res := 0
+	for i := 0; i < length; i++ {
+		for j := i; j < length; j++ {
+			if CheckPalindrome(byteS[i : j+1]) {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+func CountSubstrings_v2(s string) int {
+	byteS := []byte(s)
+	length := len(s)
+	res := 0
+	//考虑奇数个字符
+	for i := 0; i < length; i++ {
+		right := i
+		left := i
+		for right >= 0 && left < length {
+			if byteS[left] == byteS[right] {
+				res++
+				right--
+				left++
+			} else {
+				break
+			}
+		}
+	}
+	//考虑偶数个字符
+	for i := 0; i < length-1; i++ {
+		right := i
+		left := i + 1
+		for right >= 0 && left < length {
+			if byteS[left] == byteS[right] {
+				res++
+				right--
+				left++
+			} else {
+				break
+			}
+		}
+	}
+	return res
+}
