@@ -503,3 +503,84 @@ func invertTree(root *TreeNode) *TreeNode {
 
 	return root
 }
+
+/*问题*/
+/*
+给定二叉树的根节点 root，找出存在于不同节点 A 和 B 之间的最大值 V，其中 V = |A.val - B.val|，且 A 是 B 的祖先。
+
+（如果 A 的任何子节点之一为 B，或者 A 的任何子节点是 B 的祖先，那么我们认为 A 是 B 的祖先）
+
+
+
+示例：
+			8
+           / \
+          3   10
+         / \    \
+        1   6    14
+           / \   /
+          4   7 13
+
+输入：[8,3,10,1,6,null,14,null,null,4,7,13]
+      0,1,2  3,4  5,   6, 7 ,  8,  9 ,10,11
+输出：7
+解释：
+我们有大量的节点与其祖先的差值，其中一些如下：
+|8 - 3| = 5
+|3 - 7| = 4
+|8 - 1| = 7
+|10 - 13| = 3
+在所有可能的差值中，最大值 7 由 |8 - 1| = 7 得出。
+
+
+提示：
+
+树中的节点数在 2 到 5000 之间。
+每个节点的值介于 0 到 100000 之间。
+*/
+/*思路*/
+/*
+1.之前没考虑到给出的是树结构的数据
+输入的形式还是完全二叉树的形式，可以根据公式
+父 = floor((子-1)/2)
+从第1位开始计算，只算该子节点与以上祖先节点的最大值
+
+2.后序遍历，需要一个数组存储当前已经走到，但子节点还没走完的祖先数组
+思维僵化：
+其实可以在遍历过程仅保存上下界，然后跟当前节点比较，而不是每次都跟所有祖先比较
+*/
+func postSearchTreeWithAncestor(root *TreeNode, ancestor []*TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	maxDiff := 0
+	if len(ancestor) != 0 {
+		for _, node := range ancestor {
+			tempDiff := node.Val - root.Val
+			if tempDiff < 0 {
+				tempDiff = tempDiff * -1
+			}
+			if tempDiff > maxDiff {
+				maxDiff = tempDiff
+			}
+		}
+	}
+	ancestor = append(ancestor, root)
+	leftMaxDiff := postSearchTreeWithAncestor(root.Left, ancestor)
+	rightMaxDiff := postSearchTreeWithAncestor(root.Right, ancestor)
+	ancestor = ancestor[:len(ancestor)-1]
+
+	if maxDiff < leftMaxDiff {
+		maxDiff = leftMaxDiff
+	}
+	if maxDiff < rightMaxDiff {
+		maxDiff = rightMaxDiff
+	}
+
+	return maxDiff
+}
+
+func MaxAncestorDiff(root *TreeNode) int {
+	ancestor := make([]*TreeNode, 0)
+	return postSearchTreeWithAncestor(root, ancestor)
+}

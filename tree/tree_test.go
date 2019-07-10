@@ -59,3 +59,8 @@ func TestCoustructTreeInLevel(t *testing.T) {
 	fmt.Println("pre print")
 	root.PrePrint()
 }
+
+func TestMaxAncestorDiff(t *testing.T) {
+	root := ConstructTreeInLevel([]int{8, 3, 10, 1, 6, -1, 14, -1, -1, 4, 7, 13})
+	fmt.Println(MaxAncestorDiff(root))
+}
