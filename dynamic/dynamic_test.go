@@ -21,3 +21,7 @@ func TestMinPathSum(t *testing.T) {
 	minSumArr[2] = temp3
 	fmt.Println(MinPathSum(minSumArr))
 }
+
+func TestNthUglyNumber(t *testing.T) {
+	fmt.Println(NthUglyNumber(10))
+}

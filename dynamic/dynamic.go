@@ -1,5 +1,10 @@
 package dynamic
 
+import (
+	"fmt"
+	"math"
+)
+
 /*题目*/
 /*
 给定一个整数数组  nums，求出数组从索引 i 到 j  (i ≤ j) 范围内元素的总和，包含 i,  j 两点。
@@ -94,3 +99,71 @@ func MinPathSum(grid [][]int) int {
 	}
 	return minSumArr[len(minSumArr)-1][len(minSumArr[0])-1]
 }
+
+/*问题*/
+/*
+编写一个程序，找出第 n 个丑数。
+
+丑数就是只包含质因数 2, 3, 5 的正整数。
+
+示例:
+
+输入: n = 10
+输出: 12
+解释: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 是前 10 个丑数。
+说明:
+
+1 是丑数。
+n 不超过1690。
+*/
+/*思路*/
+/*
+1.除了1，下一个丑数，一定是之前的丑数*2或者再之前的丑数*3，或者更之前的丑数*5
+2.那么问题来了，怎么判断是多少个之前？？？
+*/
+func NthUglyNumber(n int) int {
+	n2 := 0
+	n3 := 0
+	n5 := 0
+	i := 1
+	res := make([]int, 1)
+	res[0] = 1
+
+	for i = 1; i < n; i++ {
+		temp2 := res[n2] * 2
+		temp3 := res[n3] * 3
+		temp5 := res[n5] * 5
+
+		fmt.Println(res[n2], temp2, res[n3], temp3, res[n5], temp5)
+
+		temp := int(math.Min(float64(temp5), math.Min(float64(temp2), float64((temp3)))))
+		res = append(res, temp)
+		if temp == temp2 {
+			n2++
+		}
+		if temp == temp3 {
+			n3++
+		}
+		if temp == temp5 {
+			n5++
+		}
+	}
+	return res[len(res)-1]
+}
+
+/*问题*/
+/*
+你的任务是计算 a^b 对 1337 取模，a 是一个正整数，b 是一个非常大的正整数且会以数组形式给出。
+
+示例 1:
+
+输入: a = 2, b = [3]
+输出: 8
+示例 2:
+
+输入: a = 2, b = [1,0]
+输出: 1024
+*/
+/*思路*/
+/*
+ */
