@@ -43,3 +43,9 @@ func TestMaxPoints(t *testing.T) {
 func TestIsUgly(t *testing.T) {
 	fmt.Println(IsUgly(7))
 }
+
+func TestGameOfLifeV1(t *testing.T) {
+	nums := [][]int{[]int{0, 1, 0, 0, 1, 1, 0}, []int{1, 1, 1, 1, 1, 1, 1}, []int{1, 1, 0, 0, 0, 0, 1}, []int{1, 1, 0, 0, 1, 0, 0}}
+	GameOfLifeV1(nums)
+	fmt.Println(nums)
+}
