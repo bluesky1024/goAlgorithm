@@ -1,7 +1,9 @@
 package greed
 
 import (
+	"container/list"
 	"github.com/bluesky1024/goAlgorithm/sort"
+	oriSort "sort"
 )
 
 /*问题*/
@@ -126,4 +128,164 @@ func LastStoneWeight(stones []int) int {
 	}
 
 	return stones[length-1]
+}
+
+/*问题*/
+/*
+公司计划面试 2N 人。第 i 人飞往 A 市的费用为 costs[i][0]，飞往 B 市的费用为 costs[i][1]。
+
+返回将每个人都飞到某座城市的最低费用，要求每个城市都有 N 人抵达。
+
+
+
+示例：
+
+输入：[[10,20],[30,200],[400,50],[30,20]]
+输出：110
+解释：
+第一个人去 A 市，费用为 10。
+第二个人去 A 市，费用为 30。
+第三个人去 B 市，费用为 50。
+第四个人去 B 市，费用为 20。
+
+最低总费用为 10 + 30 + 50 + 20 = 110，每个城市都有一半的人在面试。
+
+
+提示：
+
+1 <= costs.length <= 100
+costs.length 为偶数
+1 <= costs[i][0], costs[i][1] <= 1000
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/two-city-scheduling
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+总共2N人，2座城市每个城市都有N人抵达
+也就是每个人只能二选一，不能不选
+按差价排序，按差价高的人先选
+优先选价格低的城市
+如果城市人数够了，则只能选另一座城市
+*/
+type peopleDiff struct {
+	ind  int
+	diff int
+}
+type diffList []*peopleDiff
+
+func (p diffList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p diffList) Len() int           { return len(p) }
+func (p diffList) Less(i, j int) bool { return p[i].diff > p[j].diff }
+func TwoCitySchedCost(costs [][]int) int {
+	peopleCnt := len(costs)
+	cityCnt := peopleCnt / 2
+	cityACnt := 0
+	cityBCnt := 0
+
+	diffArr := diffList{}
+	for i, v := range costs {
+		tempDiff := v[1] - v[0]
+		if tempDiff < 0 {
+			tempDiff = tempDiff * -1
+		}
+		temp := &peopleDiff{
+			ind:  i,
+			diff: tempDiff,
+		}
+		diffArr = append(diffArr, temp)
+	}
+	oriSort.Sort(diffArr)
+
+	res := 0
+	for _, tempDiff := range diffArr {
+		if costs[tempDiff.ind][0] < costs[tempDiff.ind][1] {
+			if cityACnt < cityCnt {
+				cityACnt++
+				res = res + costs[tempDiff.ind][0]
+			} else {
+				cityBCnt++
+				res = res + costs[tempDiff.ind][1]
+			}
+		} else {
+			if cityBCnt < cityCnt {
+				cityBCnt++
+				res = res + costs[tempDiff.ind][1]
+			} else {
+				cityACnt++
+				res = res + costs[tempDiff.ind][0]
+			}
+		}
+	}
+	return res
+}
+
+/*问题*/
+/*
+给定一个由 '(' 和 ')' 括号组成的字符串 S，我们需要添加最少的括号（ '(' 或是 ')'，可以在任何位置），以使得到的括号字符串有效。
+
+从形式上讲，只有满足下面几点之一，括号字符串才是有效的：
+
+它是一个空字符串，或者
+它可以被写成 AB （A 与 B 连接）, 其中 A 和 B 都是有效字符串，或者
+它可以被写作 (A)，其中 A 是有效字符串。
+给定一个括号字符串，返回为使结果字符串有效而必须添加的最少括号数。
+
+
+
+示例 1：
+
+输入："())"
+输出：1
+示例 2：
+
+输入："((("
+输出：3
+示例 3：
+
+输入："()"
+输出：0
+示例 4：
+
+输入："()))(("
+输出：4
+
+
+提示：
+
+S.length <= 1000
+S 只包含 '(' 和 ')' 字符。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-add-to-make-parentheses-valid
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+还是用栈，尽量匹配
+左括号入栈，右括号出栈
+发现不能出栈的时候，补1个左括号，res++
+最后发现栈内还有n个剩余，补n个右括号，res+n
+
+发现内存消耗比别人要多
+别人没用栈，只存了当前没出栈的左括号的个数，去除了出栈入栈的动作
+所以内存消耗变大很多，差评
+*/
+func MinAddToMakeValid(S string) int {
+	res := 0
+	left := list.New()
+	for i, ch := range S {
+		if ch == '(' {
+			left.PushFront(i)
+		} else {
+			if left.Len() != 0 {
+				left.Remove(left.Front())
+			} else {
+				res++
+			}
+		}
+	}
+	res = res + left.Len()
+	return res
 }
