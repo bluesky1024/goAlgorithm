@@ -1,5 +1,7 @@
 package linked_list
 
+import "sort"
+
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -80,4 +82,103 @@ func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 		}
 	}
 	return res
+}
+
+/*问题*/
+/*
+在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序。
+
+示例 1:
+
+输入: 4->2->1->3
+输出: 1->2->3->4
+示例 2:
+
+输入: -1->5->3->4->0
+输出: -1->0->3->4->5
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sort-list
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+调用原生的sort.Sort()
+*/
+type NewList struct {
+	Sub *ListNode
+}
+
+func (l *NewList) Swap(i, j int) {
+	length := 0
+	pCur := l.Sub
+	var pI *ListNode
+	var pJ *ListNode
+	for {
+		if pCur == nil {
+			break
+		}
+		if length == i {
+			pI = pCur
+		}
+		if length == j {
+			pJ = pCur
+		}
+		length++
+		pCur = pCur.Next
+		if pI != nil && pJ != nil {
+			break
+		}
+	}
+	pI.Val, pJ.Val = pJ.Val, pI.Val
+	return
+}
+
+func (l *NewList) Len() int {
+	length := 0
+	pCur := l.Sub
+	for {
+		if pCur == nil {
+			break
+		}
+		length++
+		pCur = pCur.Next
+	}
+	return length
+}
+
+func (l *NewList) Less(i, j int) bool {
+	length := 0
+	pCur := l.Sub
+	var pI *ListNode
+	var pJ *ListNode
+	for {
+		if pCur == nil {
+			break
+		}
+		if length == i {
+			pI = pCur
+		}
+		if length == j {
+			pJ = pCur
+		}
+		length++
+		pCur = pCur.Next
+		if pI != nil && pJ != nil {
+			break
+		}
+	}
+	if pI.Val < pJ.Val {
+		return true
+	}
+	return false
+}
+
+func SortList(head *ListNode) *ListNode {
+	tempNewList := &NewList{
+		Sub: head,
+	}
+	sort.Sort(tempNewList)
+	head = tempNewList.Sub
+	return head
 }

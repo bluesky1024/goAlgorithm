@@ -64,3 +64,8 @@ func TestMaxAncestorDiff(t *testing.T) {
 	root := ConstructTreeInLevel([]int{8, 3, 10, 1, 6, -1, 14, -1, -1, 4, 7, 13})
 	fmt.Println(MaxAncestorDiff(root))
 }
+
+func TestSumNumbers(t *testing.T) {
+	root := ConstructTreeInLevel([]int{1, 2, 3})
+	fmt.Println(SumNumbers(root))
+}
