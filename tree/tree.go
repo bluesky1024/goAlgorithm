@@ -3,6 +3,7 @@ package tree
 import (
 	"container/list"
 	"fmt"
+	"math"
 )
 
 type TreeNode struct {
@@ -216,7 +217,7 @@ func ConstructTreeInLevel(nums []int) (root *TreeNode) {
 		curPos := tempList.Front().Value.(*TreeNode)
 		if (i*2 - 1) < length {
 			var left *TreeNode = nil
-			if nums[2*i-1] != -1 {
+			if nums[2*i-1] != -1000000000 {
 				left = &TreeNode{
 					Val: nums[2*i-1],
 				}
@@ -649,4 +650,76 @@ func SumNumbers(root *TreeNode) int {
 	curRes := 0
 	SumNumbersWithAncestors(root, &ancestors, &curRes)
 	return curRes
+}
+
+/*问题*/
+/*
+给定一个非空二叉树，返回其最大路径和。
+
+本题中，路径被定义为一条从树中任意节点出发，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+
+示例 1:
+
+输入: [1,2,3]
+
+       1
+      / \
+     2   3
+
+输出: 6
+示例 2:
+
+输入: [-10,9,20,null,null,15,7]
+
+   -10
+   / \
+  9  20
+    /  \
+   15   7
+
+输出: 42
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+换种说法，思路比较清晰
+遍历所有节点，计算从某节点出发，和最大的左子树和 与 右子树和 以及 两子树和相加(均包括该节点本身吧)
+*/
+func getTwoPartSum(root *TreeNode, curMax *int, isSet *bool) (leftSum int, rightSum int) {
+	if root == nil {
+		return 0, 0
+	}
+	ll, lr := getTwoPartSum(root.Left, curMax, isSet)
+	if ll < lr {
+		ll = lr
+	}
+	rl, rr := getTwoPartSum(root.Right, curMax, isSet)
+	if rl < rr {
+		rl = rr
+	}
+
+	leftSum = ll + root.Val
+	rightSum = rl + root.Val
+
+	tempMax := int(math.Max(float64(leftSum+rightSum-root.Val), math.Max(float64(leftSum), float64(rightSum))))
+	tempMax = int(math.Max(float64(tempMax), float64(root.Val)))
+	if !*isSet {
+		*curMax = tempMax
+		*isSet = true
+	} else {
+		if *curMax < tempMax {
+			*curMax = tempMax
+		}
+	}
+	return leftSum, rightSum
+}
+func MaxPathSum(root *TreeNode) int {
+	max := new(int)
+	isSet := new(bool)
+	*isSet = false
+	getTwoPartSum(root, max, isSet)
+	return *max
 }

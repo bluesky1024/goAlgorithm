@@ -69,3 +69,8 @@ func TestSumNumbers(t *testing.T) {
 	root := ConstructTreeInLevel([]int{1, 2, 3})
 	fmt.Println(SumNumbers(root))
 }
+
+func TestMaxPathSum(t *testing.T) {
+	root := ConstructTreeInLevel([]int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6})
+	fmt.Println(MaxPathSum(root))
+}
