@@ -1,8 +1,11 @@
 package array
 
 import (
+	"fmt"
 	"github.com/bluesky1024/goAlgorithm/sort"
 	"math"
+	oriSort "sort"
+	"strconv"
 )
 
 /*问题*/
@@ -806,4 +809,98 @@ func GameOfLifeV1(board [][]int) {
 		}
 	}
 	return
+}
+
+/*问题*/
+/*
+给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？找出所有满足条件且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/3sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+1.三个for循环暴力遍历
+2.加个map，可以少一层循环
+*/
+func ThreeSumV1(nums []int) [][]int {
+	oriSort.Ints(nums)
+	length := len(nums)
+	res := make([][]int, 0)
+	checkRes := make(map[string]bool)
+	for i := 0; i < length-2; i++ {
+		if nums[i] > 0 {
+			break
+		}
+		for j := i + 1; j < length-1; j++ {
+			if nums[i]+nums[j]*2 > 0 {
+				break
+			}
+			for k := j + 1; k < length; k++ {
+				if nums[i]+nums[j]+nums[k] > 0 {
+					break
+				}
+				if nums[i]+nums[j]+nums[k] == 0 {
+					tempStr := strconv.Itoa(nums[i]) + "_" + strconv.Itoa(nums[j]) + "_" + strconv.Itoa(nums[k])
+					if _, ok := checkRes[tempStr]; !ok {
+						checkRes[tempStr] = true
+						res = append(res, []int{nums[i], nums[j], nums[k]})
+					}
+				}
+			}
+		}
+	}
+	return res
+}
+
+func ThreeSumV2(nums []int) [][]int {
+	oriSort.Ints(nums)
+	fmt.Println(nums)
+	length := len(nums)
+	res := make([][]int, 0)
+	checkRes := make(map[string]bool)
+	checkNum := make(map[int]int)
+	for _, v := range nums {
+		if cnt, ok := checkNum[v]; ok {
+			checkNum[v] = cnt + 1
+		} else {
+			checkNum[v] = 1
+		}
+	}
+	for i := 0; i < length-2; i++ {
+		if nums[i] > 0 {
+			break
+		}
+		for j := i + 1; j < length; j++ {
+			if (nums[i] + nums[j]*2) > 0 {
+				break
+			}
+			thirdOne := 0 - nums[i] - nums[j]
+			if cnt, ok := checkNum[thirdOne]; ok {
+				if thirdOne == nums[j] && thirdOne != nums[i] && cnt < 2 {
+					break
+				}
+				if thirdOne == nums[j] && thirdOne == nums[i] && cnt < 3 {
+					break
+				}
+				tempStr := strconv.Itoa(nums[i]) + "_" + strconv.Itoa(nums[j]) + "_" + strconv.Itoa(thirdOne)
+				if _, ok := checkRes[tempStr]; !ok {
+					checkRes[tempStr] = true
+					res = append(res, []int{nums[i], nums[j], thirdOne})
+				}
+			}
+		}
+	}
+	return res
 }
