@@ -57,3 +57,8 @@ func TestCountSubstrings(t *testing.T) {
 	s := "aaa"
 	fmt.Println(CountSubstrings_v2(s))
 }
+
+func TestScoreOfParentheses(t *testing.T) {
+	s := "((())(()))"
+	fmt.Println(ScoreOfParentheses(s))
+}

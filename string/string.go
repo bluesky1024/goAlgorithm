@@ -3,6 +3,7 @@ package string
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 /*问题*/
@@ -512,9 +513,6 @@ func FindLUSlength(a string, b string) int {
 
 /*问题*/
 /*
- */
-/*思路*/
-/*
 给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
 
 具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被计为是不同的子串。
@@ -532,6 +530,11 @@ func FindLUSlength(a string, b string) int {
 注意:
 
 输入的字符串长度不会超过1000。
+*/
+/*思路*/
+/*
+1.两层for循环进行遍历检查
+2.一层循环，以各个点为中心，考虑奇数个字符和偶数个字符
 */
 func CheckPalindrome(s []byte) bool {
 	length := len(s)
@@ -591,4 +594,89 @@ func CountSubstrings_v2(s string) int {
 		}
 	}
 	return res
+}
+
+/*问题*/
+/*
+给定一个平衡括号字符串 S，按下述规则计算该字符串的分数：
+
+() 得 1 分。
+AB 得 A + B 分，其中 A 和 B 是平衡括号字符串。
+(A) 得 2 * A 分，其中 A 是平衡括号字符串。
+
+
+示例 1：
+
+输入： "()"
+输出： 1
+示例 2：
+
+输入： "(())"
+输出： 2
+示例 3：
+
+输入： "()()"
+输出： 2
+示例 4：
+
+输入： "( () ( () ) )" => ( 1 + 1*2 ）* 2 = 6
+输出： 6
+
+
+提示：
+
+S 是平衡括号字符串，且只含有 ( 和 ) 。
+2 <= S.length <= 50
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/score-of-parentheses
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+级别平行括号，分数简单相加
+括号套括号，分数翻倍
+
+最好是能用分治方法来做，从小括号逐步扩展到大括号，尽量减少内嵌括号分数的重复计算
+
+
+*/
+
+func ScoreOfParentheses(S string) int {
+	S = strings.Replace(S, "()", "1", -1)
+
+	leftCnt := 0
+
+	res := make([]int, 0)
+	finalRes := make([]int, 0)
+	tempRes := 0
+	for _, v := range S {
+		if v == '(' {
+			if tempRes != 0 {
+				finalRes = append(finalRes, tempRes)
+			}
+			res = append(res, 0)
+			res[leftCnt] = tempRes
+			tempRes = 0
+			leftCnt++
+		} else if v == ')' {
+			leftCnt--
+			if leftCnt == 0 {
+				res[0] = tempRes * 2
+				finalRes = append(finalRes, res[0])
+				tempRes = 0
+			} else {
+				tempRes = res[leftCnt-1] + tempRes*2
+				res = res[:len(res)-1]
+			}
+		} else {
+			tempRes++
+		}
+	}
+
+	a := tempRes
+	for _, v := range finalRes {
+		a = a + v
+	}
+	return a
 }
