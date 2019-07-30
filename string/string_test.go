@@ -59,6 +59,7 @@ func TestCountSubstrings(t *testing.T) {
 }
 
 func TestScoreOfParentheses(t *testing.T) {
-	s := "((())(()))"
+	s := "(()(()))(()())"
+	//s = "(((())))"
 	fmt.Println(ScoreOfParentheses(s))
 }

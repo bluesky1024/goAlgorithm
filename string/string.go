@@ -645,38 +645,35 @@ S 是平衡括号字符串，且只含有 ( 和 ) 。
 func ScoreOfParentheses(S string) int {
 	S = strings.Replace(S, "()", "1", -1)
 
-	leftCnt := 0
-
 	res := make([]int, 0)
-	finalRes := make([]int, 0)
+	a := 0
 	tempRes := 0
 	for _, v := range S {
 		if v == '(' {
-			if tempRes != 0 {
-				finalRes = append(finalRes, tempRes)
-			}
 			res = append(res, 0)
-			res[leftCnt] = tempRes
-			tempRes = 0
-			leftCnt++
-		} else if v == ')' {
-			leftCnt--
-			if leftCnt == 0 {
-				res[0] = tempRes * 2
-				finalRes = append(finalRes, res[0])
+			if tempRes != 0 {
+				if len(res) != 1 {
+					res[len(res)-2] = res[len(res)-2] + tempRes
+				} else {
+					a = a + tempRes
+				}
 				tempRes = 0
-			} else {
-				tempRes = res[leftCnt-1] + tempRes*2
-				res = res[:len(res)-1]
 			}
+		} else if v == ')' {
+			if len(res) != 1 {
+				res[len(res)-2] = res[len(res)-2] + tempRes*2
+				tempRes = res[len(res)-1] * 2
+			} else {
+				res[0] = res[0] + tempRes
+				a = a + res[0]*2
+				tempRes = 0
+			}
+			res = res[:len(res)-1]
 		} else {
 			tempRes++
 		}
 	}
 
-	a := tempRes
-	for _, v := range finalRes {
-		a = a + v
-	}
+	a = a + tempRes
 	return a
 }
