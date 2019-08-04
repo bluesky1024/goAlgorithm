@@ -153,17 +153,148 @@ func NthUglyNumber(n int) int {
 
 /*问题*/
 /*
-你的任务是计算 a^b 对 1337 取模，a 是一个正整数，b 是一个非常大的正整数且会以数组形式给出。
+给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
 
-示例 1:
+例如，给定三角形：
 
-输入: a = 2, b = [3]
-输出: 8
-示例 2:
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
 
-输入: a = 2, b = [1,0]
-输出: 1024
+说明：
+
+如果你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题，那么你的算法会很加分。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/triangle
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 /*思路*/
 /*
- */
+没其他方法，只能遍历，逐层记录到达当前点时的最小路径和
+只使用 O(n) 的额外空间，也就是每次循环，要覆盖上一轮的值
+覆盖的时候要保证不会再用到，所以应该从后往前更新
+*/
+func MinimumTotal(triangle [][]int) int {
+	levelCnt := len(triangle)
+	if levelCnt == 0 {
+		return 0
+	}
+	nodeSum := make([]int, levelCnt)
+
+	for i, nodes := range triangle {
+		if i == 0 {
+			nodeSum[0] = nodes[0]
+			continue
+		}
+
+		for ii := i; ii >= 0; ii-- {
+			if ii == i {
+				nodeSum[ii] = nodeSum[ii-1] + nodes[ii]
+			} else if ii == 0 {
+				nodeSum[ii] = nodeSum[ii] + nodes[ii]
+			} else {
+				temp := nodeSum[ii-1]
+				if temp > nodeSum[ii] {
+					temp = nodeSum[ii]
+				}
+				nodeSum[ii] = nodes[ii] + temp
+			}
+		}
+	}
+
+	res := 0
+	for i, v := range nodeSum {
+		if i == 0 {
+			res = v
+			continue
+		}
+		if v < res {
+			res = v
+		}
+	}
+	return res
+}
+
+/*问题*/
+/*
+给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+
+返回符合要求的最少分割次数。
+
+示例:
+
+输入: "aab"
+输出: 1
+解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+思路a：
+1.每个字符之间都能选择是否插入,
+2.两种选择都进行判断，并逐步剪支
+3.遍历到最后一个字符，然后返回最终的，插入次数
+lastCutInd --- 上一个字符串的最后一个字符位置
+curInd --- 当前需要判断是否在后方插入，的字符的ind
+*/
+func checkPalindrome(s string) bool {
+	length := len(s)
+	for i := 0; i < length; i++ {
+		if i >= length-i-1 {
+			break
+		}
+		if s[i] != s[length-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func minCutWithCutTimes(s string, lastCutInd int, curInd int, cutTime int) int {
+	if len(s) == curInd+1 {
+		if !checkPalindrome(s[lastCutInd+1:]) {
+			return 0
+		}
+		return cutTime
+	}
+	//若在curInd后方加入，
+	s1 := s[lastCutInd+1 : curInd+1]
+	if checkPalindrome(s1) {
+		cutTime1 := minCutWithCutTimes(s, curInd, curInd+1, cutTime+1)
+		cutTime2 := minCutWithCutTimes(s, lastCutInd, curInd+1, cutTime)
+		if cutTime1 == 0 && cutTime2 != 0 {
+			return cutTime2
+		} else if cutTime1 != 0 && cutTime2 == 0 {
+			return cutTime1
+		} else if cutTime1 == 0 && cutTime2 == 0 {
+			return 0
+		} else {
+			if cutTime1 < cutTime2 {
+				return cutTime1
+			} else {
+				return cutTime2
+			}
+		}
+	} else {
+		return minCutWithCutTimes(s, lastCutInd, curInd+1, cutTime)
+	}
+
+}
+
+func MinCut(s string) int {
+	if checkPalindrome(s) {
+		return 0
+	}
+	curInd := 0
+	lastCutInd := -1
+	cutTime := 0
+	return minCutWithCutTimes(s, lastCutInd, curInd, cutTime)
+}
