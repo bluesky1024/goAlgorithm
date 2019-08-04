@@ -2,6 +2,7 @@ package deep_search
 
 import (
 	"fmt"
+	"github.com/bluesky1024/goAlgorithm/tree"
 	"testing"
 )
 
@@ -13,4 +14,9 @@ func TestCanVisitAllRooms(t *testing.T) {
 
 func TestFindRotateSteps(t *testing.T) {
 
+}
+
+func TestBinaryTreePaths(t *testing.T) {
+	root := tree.ConstrucTreeInLevelWithoutInvalidNode([]int{1, 2, 3, -1, 5})
+	fmt.Println(BinaryTreePaths(root))
 }

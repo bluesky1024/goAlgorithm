@@ -2,7 +2,9 @@ package deep_search
 
 import (
 	"fmt"
+	"github.com/bluesky1024/goAlgorithm/tree"
 	"math"
+	"strconv"
 	"sync"
 )
 
@@ -139,4 +141,51 @@ func FindRotateSteps(ring string, key string) int {
 	chooseOneStep(ringLength, keyLength, ring, key, 0, 0, 0, &curMin)
 	curMin += keyLength
 	return curMin
+}
+
+/*问题*/
+/*
+给定一个二叉树，返回所有从根节点到叶子节点的路径。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例:
+
+输入:
+
+   1
+ /   \
+2     3
+ \
+  5
+
+输出: ["1->2->5", "1->3"]
+
+解释: 所有根节点到叶子节点的路径为: 1->2->5, 1->3
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-paths
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+父节点的路径集合是两个子节点的路径集合与父节点本身拼凑后相加
+*/
+func BinaryTreePaths(root *tree.TreeNode) []string {
+	if root == nil {
+		return nil
+	}
+	if root.Left == nil && root.Right == nil {
+		return []string{strconv.Itoa(root.Val)}
+	}
+	lSlice := BinaryTreePaths(root.Left)
+	rSlice := BinaryTreePaths(root.Right)
+	res := make([]string, 0)
+	for _, s := range lSlice {
+		res = append(res, strconv.Itoa(root.Val)+"->"+s)
+	}
+	for _, s := range rSlice {
+		res = append(res, strconv.Itoa(root.Val)+"->"+s)
+	}
+	return res
 }
