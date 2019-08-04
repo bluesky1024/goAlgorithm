@@ -150,6 +150,22 @@ func ConstructTreeByPreAndMid(preNums []int, midNums []int) (root *TreeNode) {
 	return root
 }
 
+func CompareTwoTree(root1 *TreeNode, root2 *TreeNode) bool {
+	if root1 == nil && root2 == nil {
+		return true
+	}
+	if root1 != nil && root2 == nil {
+		return false
+	}
+	if root1 == nil && root2 != nil {
+		return false
+	}
+	if root1.Val != root2.Val {
+		return false
+	}
+	return CompareTwoTree(root1.Left, root2.Right) && CompareTwoTree(root1.Right, root2.Right)
+}
+
 /*问题*/
 /*
 给定一个数组，求其以顺序存储方式构成的完全二叉树
@@ -190,6 +206,56 @@ func ConstructCompleteTree(nums []int) (root *TreeNode) {
 		tempList.Remove(tempList.Front())
 	}
 
+	return root
+}
+
+/*问题*/
+/*
+给定一个数组，[9 6 -3 nil nil -6 2 nil nil 2 nil -6 -6 -6]，属于二叉树的层次遍历，其中-1表示该节点为null
+若某节点处为nil，则下一层遍历中，该节点处不再遍历
+重构二叉树
+*/
+/*思路*/
+/*
+初始化一个
+*/
+func ConstrucTreeInLevelWithoutInvalidNode(nums []int) (root *TreeNode) {
+	length := len(nums)
+	if length == 0 {
+		return nil
+	}
+	root = &TreeNode{
+		Val: nums[0],
+	}
+	var nodeLevel []*TreeNode
+	nodeLevel = append(nodeLevel, root)
+	ind := 1
+	for ind < length {
+		var tempNodes []*TreeNode
+		for _, node := range nodeLevel {
+			if ind >= length {
+				break
+			}
+			if nums[ind] != -1 {
+				node.Left = &TreeNode{
+					Val: nums[ind],
+				}
+				tempNodes = append(tempNodes, node.Left)
+			}
+			ind++
+			if ind >= length {
+				break
+			}
+			if nums[ind] != -1 {
+				node.Right = &TreeNode{
+					Val: nums[ind],
+				}
+				tempNodes = append(tempNodes, node.Right)
+			}
+			ind++
+		}
+		nodeLevel = tempNodes
+	}
 	return root
 }
 
@@ -700,9 +766,16 @@ func getTwoPartSum(root *TreeNode, curMax *int, isSet *bool) (leftSum int, right
 	if rl < rr {
 		rl = rr
 	}
-
-	leftSum = ll + root.Val
-	rightSum = rl + root.Val
+	if ll > 0 {
+		leftSum = ll + root.Val
+	} else {
+		leftSum = root.Val
+	}
+	if rl > 0 {
+		rightSum = rl + root.Val
+	} else {
+		rightSum = root.Val
+	}
 
 	tempMax := int(math.Max(float64(leftSum+rightSum-root.Val), math.Max(float64(leftSum), float64(rightSum))))
 	tempMax = int(math.Max(float64(tempMax), float64(root.Val)))
