@@ -24,3 +24,7 @@ func TestMinAddToMakeValid(t *testing.T) {
 	s := "(())())"
 	fmt.Println(MinAddToMakeValid(s))
 }
+
+func TestFindContentChildren(t *testing.T) {
+	fmt.Println(FindContentChildren([]int{1, 2}, []int{1, 2, 3}))
+}
