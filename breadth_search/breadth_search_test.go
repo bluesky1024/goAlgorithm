@@ -10,3 +10,11 @@ func TestOrangesRotting(t *testing.T) {
 	res := OrangesRotting(inputNums)
 	fmt.Println(res)
 }
+
+func TestNumSquaresV1(t *testing.T) {
+	fmt.Println(NumSquaresV1(4703))
+}
+
+func TestNumSquaresV2(t *testing.T) {
+	fmt.Println(NumSquaresV2(5))
+}

@@ -1,5 +1,9 @@
 package breadth_search
 
+import (
+	"math"
+)
+
 /*问题*/
 /*
 在给定的网格中，每个单元格可以有以下三个值之一：
@@ -278,4 +282,63 @@ func updateBoard(board [][]byte, click []int) [][]byte {
 		board = updateBoard(board, []int{dPos, rPos})
 	}
 	return board
+}
+
+/*问题*/
+/*
+给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+
+示例 1:
+
+输入: n = 12
+输出: 3
+解释: 12 = 4 + 4 + 4.
+示例 2:
+
+输入: n = 13
+输出: 2
+解释: 13 = 4 + 9.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/perfect-squares
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+1.暴力遍历，中途进行一些剪枝操作
+
+2.动态规划
+dp[i] = MIN(dp[i], dp[i - j * j] + 1)
+*/
+func NumSquaresWithCurNum(n int, curMin *int, curCnt int) {
+	if *curMin != 0 && *curMin < curCnt {
+		return
+	}
+	max := int(math.Floor(math.Sqrt(float64(n))))
+	if max*max == n {
+		if (*curMin == 0) || (*curMin > curCnt+1) {
+			*curMin = curCnt + 1
+		}
+		return
+	}
+	for i := max; i >= 1; i-- {
+		NumSquaresWithCurNum(n-i*i, curMin, curCnt+1)
+	}
+}
+
+func NumSquaresV1(n int) int {
+	curMin := new(int)
+	NumSquaresWithCurNum(n, curMin, 0)
+	return *curMin
+}
+
+func NumSquaresV2(n int) int {
+	dp := make([]int, n+1)
+	for i := 1; i < n; i++ {
+		dp[i] = i
+		for j := 1; i-j*j >= 0; j++ {
+			dp[i] = int(math.Min(float64(dp[i]), float64(dp[i-j*j]+1)))
+		}
+	}
+	return dp[n]
 }
