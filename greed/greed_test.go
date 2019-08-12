@@ -28,3 +28,8 @@ func TestMinAddToMakeValid(t *testing.T) {
 func TestFindContentChildren(t *testing.T) {
 	fmt.Println(FindContentChildren([]int{1, 2}, []int{1, 2, 3}))
 }
+
+func TestCarPooling(t *testing.T) {
+	trip := [][]int{[]int{2, 1, 5}, []int{3, 5, 7}}
+	fmt.Println(CarPooling(trip, 3))
+}
