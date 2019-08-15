@@ -93,3 +93,34 @@ func TestOddEvenList(t *testing.T) {
 	fmt.Println("after odd")
 	a.Prinf()
 }
+
+func TestReverseListV1(t *testing.T) {
+	a := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+				Next: &ListNode{
+					Val: 4,
+					Next: &ListNode{
+						Val: 5,
+						Next: &ListNode{
+							Val:  6,
+							Next: nil,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	a.Prinf()
+	a = ReverseListV1(a)
+	fmt.Println("after reverse v1")
+	a.Prinf()
+
+	a = ReverseListV2(a)
+	fmt.Println("after reverse v2")
+	a.Prinf()
+}
