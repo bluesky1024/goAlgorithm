@@ -33,3 +33,11 @@ func TestMergeSort(t *testing.T) {
 	res := MergeSort(nums)
 	fmt.Println(nums, res)
 }
+
+func TestLargestPerimeter(t *testing.T) {
+	fmt.Println(LargestPerimeter([]int{3, 6, 2, 3}))
+}
+
+func TestPancakeSort(t *testing.T) {
+	fmt.Println(PancakeSort([]int{3, 2, 4, 1}))
+}
