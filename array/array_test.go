@@ -3059,3 +3059,11 @@ func TestThreeSumV2(t *testing.T) {
 	nums := []int{-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6}
 	fmt.Println(ThreeSumV2(nums))
 }
+
+func TestLexicalOrder(t *testing.T) {
+	fmt.Println(LexicalOrder(122))
+}
+
+func TestDailyTemperatures(t *testing.T) {
+	fmt.Println(DailyTemperatures([]int{73, 74, 75, 71, 69, 72, 76, 73}))
+}

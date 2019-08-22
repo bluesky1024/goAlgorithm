@@ -904,3 +904,91 @@ func ThreeSumV2(nums []int) [][]int {
 	}
 	return res
 }
+
+/*问题*/
+/*
+给定一个整数 n, 返回从 1 到 n 的字典顺序。
+
+例如，
+
+给定 n =1 3，返回 [1,10,11,12,13,2,3,4,5,6,7,8,9] 。
+
+请尽可能的优化算法的时间复杂度和空间复杂度。 输入的数据 n 小于等于 5,000,000。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lexicographical-numbers
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+字典序是确定的，可以从1开始遍历
+遍历顺序无非就是每次*10+i，i从1到9
+终止条件遍历数大于n
+只是这里面的res是不停的在进行append和copy，内存占用其实很高
+要进行优化，可以定义一个新的结构体包裹切片，这个结构体变量的指针作为传入参数，所有迭代过程对同一个变量进行操作，可以减少copy操作，同时内存占用减少
+*/
+func LexicalOrderWithBase(n int, base int) []int {
+	res := make([]int, 0)
+	base = base * 10
+	var i int
+	if base == 0 {
+		i = 1
+	} else {
+		i = 0
+	}
+	for ; i < 10; i++ {
+		if base+i > n {
+			break
+		}
+		res = append(res, base+i)
+		res = append(res, LexicalOrderWithBase(n, base+i)...)
+	}
+	return res
+}
+func LexicalOrder(n int) []int {
+	res := LexicalOrderWithBase(n, 0)
+	return res
+}
+
+/*问题*/
+/*
+根据每日 气温 列表，请重新生成一个列表，对应位置的输入是你需要再等待多久温度才会升高超过该日的天数。如果之后都不会升高，请在该位置用 0 来代替。
+
+例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0, 0]。
+
+提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/daily-temperatures
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+直观来看，第i位的数据要与后续n-i位有关
+如果反过来进行遍历，可以减少遍历次数，第i位的数据首先参考第i+1位，如果不对，跳转到新数组中第i+1位的数据
+*/
+func DailyTemperatures(T []int) []int {
+	length := len(T)
+	if length == 0 {
+		return nil
+	}
+	res := make([]int, length)
+	res[length-1] = 0
+	for i := length - 2; i >= 0; i-- {
+		checkInd := i + 1
+		temp := T[checkInd]
+		for {
+			if temp > T[i] {
+				res[i] = checkInd - i
+				break
+			}
+			if res[checkInd] == 0 {
+				res[i] = 0
+				break
+			}
+			checkInd = res[checkInd] + checkInd
+			temp = T[checkInd]
+		}
+	}
+	return res
+}
