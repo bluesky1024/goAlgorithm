@@ -63,3 +63,7 @@ func TestScoreOfParentheses(t *testing.T) {
 	//s = "(((())))"
 	fmt.Println(ScoreOfParentheses(s))
 }
+
+func TestDefangIPaddr(t *testing.T) {
+	fmt.Println(DefangIPaddr("1.1.1.1"))
+}
