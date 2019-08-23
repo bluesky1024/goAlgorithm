@@ -13,7 +13,7 @@ func TestTreeNode_Print(t *testing.T) {
 
 func TestConstrucTreeInLevelWithoutInvalidNode(t *testing.T) {
 	nums := []int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6}
-	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	root.PrePrint()
 	fmt.Println("---")
 	root.MidPrint()
@@ -154,14 +154,14 @@ func TestMaxPathSum(t *testing.T) {
 
 func TestConstructNewTreeWithParent(t *testing.T) {
 	nums := []int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6}
-	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	newRoot := ConstructNewTreeWithParent(root, nil, false)
 	fmt.Println(newRoot)
 }
 
 func TestGetNodesByPre(t *testing.T) {
 	nums := []int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6}
-	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	list := GetNodesByPre(root)
 	for _, v := range list {
 		fmt.Println(v.Val)
@@ -172,14 +172,7 @@ func TestGetNodesByPre(t *testing.T) {
 
 func TestFindDuplicateSubtrees(t *testing.T) {
 	nums := []int{0, 0, 0, 0, -1, -1, 0, -1, -1, -1, 0}
-	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
-
-	//str := GetLevelLoopString([]*TreeNode{root})
-	//fmt.Println(str)
-
+	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	list := FindDuplicateSubtrees(root)
 	fmt.Println(list)
-	//for _, v := range list {
-	//	fmt.Println(v.Val)
-	//}
 }

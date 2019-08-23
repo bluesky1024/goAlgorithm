@@ -220,7 +220,7 @@ func ConstructCompleteTree(nums []int) (root *TreeNode) {
 /*
 初始化一个
 */
-func ConstrucTreeInLevelWithoutInvalidNode(nums []int) (root *TreeNode) {
+func ConstructTreeInLevelWithoutInvalidNode(nums []int) (root *TreeNode) {
 	length := len(nums)
 	if length == 0 {
 		return nil
@@ -270,47 +270,20 @@ func GetNodesByPre(root *TreeNode) []*TreeNode {
 	curNodeList = append(curNodeList, GetNodesByPre(root.Right)...)
 	return curNodeList
 }
-func CompareTwoTrees(a *TreeNode, b *TreeNode) bool {
-	if a.Left != nil {
-		if b.Left == nil {
-			return false
-		}
-		if !CompareTwoTrees(a.Left, b.Left) {
-			return false
-		}
-	} else {
-		if b.Left != nil {
-			return false
-		}
-	}
-	if a.Right != nil {
-		if b.Right == nil {
-			return false
-		}
-		if !CompareTwoTrees(a.Right, b.Right) {
-			return false
-		}
-	} else {
-		if b.Right != nil {
-			return false
-		}
-	}
-	return true
-}
 
-type TreeNodeWithParent struct {
+type nodeWithParent struct {
 	attr   bool //属性，false-left，true-right
 	cur    *TreeNode
-	left   *TreeNodeWithParent
-	right  *TreeNodeWithParent
-	parent *TreeNodeWithParent
+	left   *nodeWithParent
+	right  *nodeWithParent
+	parent *nodeWithParent
 }
 
-func ConstructNewTreeWithParent(root *TreeNode, parentNode *TreeNodeWithParent, attr bool) *TreeNodeWithParent {
+func ConstructNewTreeWithParent(root *TreeNode, parentNode *nodeWithParent, attr bool) *nodeWithParent {
 	if root == nil {
 		return nil
 	}
-	res := &TreeNodeWithParent{
+	res := &nodeWithParent{
 		parent: parentNode,
 		cur:    root,
 		attr:   attr,
@@ -320,14 +293,14 @@ func ConstructNewTreeWithParent(root *TreeNode, parentNode *TreeNodeWithParent, 
 	return res
 }
 
-func GetLeafNodes(root *TreeNodeWithParent) []*TreeNodeWithParent {
+func GetLeafNodes(root *nodeWithParent) []*nodeWithParent {
 	if root == nil {
 		return nil
 	}
 	if root.left == nil && root.right == nil {
-		return []*TreeNodeWithParent{root}
+		return []*nodeWithParent{root}
 	}
-	res := make([]*TreeNodeWithParent, 0)
+	res := make([]*nodeWithParent, 0)
 	res = append(res, GetLeafNodes(root.left)...)
 	res = append(res, GetLeafNodes(root.right)...)
 	return res
