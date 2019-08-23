@@ -151,3 +151,35 @@ func TestMaxPathSum(t *testing.T) {
 	root.Right.Right = temp2
 	fmt.Println(MaxPathSum(root))
 }
+
+func TestConstructNewTreeWithParent(t *testing.T) {
+	nums := []int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6}
+	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+	newRoot := ConstructNewTreeWithParent(root, nil, false)
+	fmt.Println(newRoot)
+}
+
+func TestGetNodesByPre(t *testing.T) {
+	nums := []int{9, 6, -3, -1, -1, -6, 2, -1, -1, 2, -1, -6, -6, -6}
+	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+	list := GetNodesByPre(root)
+	for _, v := range list {
+		fmt.Println(v.Val)
+	}
+	fmt.Println("---")
+	root.PrePrint()
+}
+
+func TestFindDuplicateSubtrees(t *testing.T) {
+	nums := []int{0, 0, 0, 0, -1, -1, 0, -1, -1, -1, 0}
+	root := ConstrucTreeInLevelWithoutInvalidNode(nums)
+
+	//str := GetLevelLoopString([]*TreeNode{root})
+	//fmt.Println(str)
+
+	list := FindDuplicateSubtrees(root)
+	fmt.Println(list)
+	//for _, v := range list {
+	//	fmt.Println(v.Val)
+	//}
+}

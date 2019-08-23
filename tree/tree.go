@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"fmt"
 	"math"
+	"strconv"
 )
 
 type TreeNode struct {
@@ -259,6 +260,79 @@ func ConstrucTreeInLevelWithoutInvalidNode(nums []int) (root *TreeNode) {
 	return root
 }
 
+func GetNodesByPre(root *TreeNode) []*TreeNode {
+	if root == nil {
+		return nil
+	}
+	curNodeList := make([]*TreeNode, 1)
+	curNodeList[0] = root
+	curNodeList = append(curNodeList, GetNodesByPre(root.Left)...)
+	curNodeList = append(curNodeList, GetNodesByPre(root.Right)...)
+	return curNodeList
+}
+func CompareTwoTrees(a *TreeNode, b *TreeNode) bool {
+	if a.Left != nil {
+		if b.Left == nil {
+			return false
+		}
+		if !CompareTwoTrees(a.Left, b.Left) {
+			return false
+		}
+	} else {
+		if b.Left != nil {
+			return false
+		}
+	}
+	if a.Right != nil {
+		if b.Right == nil {
+			return false
+		}
+		if !CompareTwoTrees(a.Right, b.Right) {
+			return false
+		}
+	} else {
+		if b.Right != nil {
+			return false
+		}
+	}
+	return true
+}
+
+type TreeNodeWithParent struct {
+	attr   bool //属性，false-left，true-right
+	cur    *TreeNode
+	left   *TreeNodeWithParent
+	right  *TreeNodeWithParent
+	parent *TreeNodeWithParent
+}
+
+func ConstructNewTreeWithParent(root *TreeNode, parentNode *TreeNodeWithParent, attr bool) *TreeNodeWithParent {
+	if root == nil {
+		return nil
+	}
+	res := &TreeNodeWithParent{
+		parent: parentNode,
+		cur:    root,
+		attr:   attr,
+	}
+	res.left = ConstructNewTreeWithParent(root.Left, res, false)
+	res.right = ConstructNewTreeWithParent(root.Right, res, true)
+	return res
+}
+
+func GetLeafNodes(root *TreeNodeWithParent) []*TreeNodeWithParent {
+	if root == nil {
+		return nil
+	}
+	if root.left == nil && root.right == nil {
+		return []*TreeNodeWithParent{root}
+	}
+	res := make([]*TreeNodeWithParent, 0)
+	res = append(res, GetLeafNodes(root.left)...)
+	res = append(res, GetLeafNodes(root.right)...)
+	return res
+}
+
 /*问题*/
 /*
 给定一个数组，[10,5,15,3,7,-1,18]，属于二叉树的层次遍历，其中-1表示该节点为null
@@ -283,7 +357,7 @@ func ConstructTreeInLevel(nums []int) (root *TreeNode) {
 		curPos := tempList.Front().Value.(*TreeNode)
 		if (i*2 - 1) < length {
 			var left *TreeNode = nil
-			if nums[2*i-1] != -1000000000 {
+			if nums[2*i-1] != -1 {
 				left = &TreeNode{
 					Val: nums[2*i-1],
 				}
@@ -795,4 +869,92 @@ func MaxPathSum(root *TreeNode) int {
 	*isSet = false
 	getTwoPartSum(root, max, isSet)
 	return *max
+}
+
+/*问题*/
+/*
+给定一棵二叉树，返回所有重复的子树。对于同一类的重复子树，你只需要返回其中任意一棵的根结点即可。
+
+两棵树重复是指它们具有相同的结构以及相同的结点值。
+
+示例 1：
+
+        1
+       / \
+      2   3
+     /   / \
+    4   2   4
+       /
+      4
+下面是两个重复的子树：
+
+      2
+     /
+    4
+和
+
+    4
+因此，你需要以列表的形式返回上述重复子树的根结点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/find-duplicate-subtrees
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+子树重复，首先得保证叶子节点重复
+需要一个数组存储叶子结点
+对叶子节点的数值进行分类，判断是否相等
+然后进行反向遍历
+*/
+func GetLevelLoopString(nodes []*TreeNode) string {
+	res := ""
+	if len(nodes) == 0 {
+		return res
+	}
+	nextNodes := make([]*TreeNode, 0)
+	for _, node := range nodes {
+		if node == nil {
+			res = res + "n" + "."
+			continue
+		}
+		res = res + strconv.Itoa(node.Val) + "."
+		nextNodes = append(nextNodes, node.Left)
+		nextNodes = append(nextNodes, node.Right)
+	}
+	res = res + GetLevelLoopString(nextNodes)
+	return res
+}
+
+func FindDuplicateSubtrees(root *TreeNode) []*TreeNode {
+	type tempStruct struct {
+		node        *TreeNode
+		checkRepeat bool
+	}
+
+	checkRes := make(map[string]tempStruct)
+
+	nodeList := GetNodesByPre(root)
+	for _, node := range nodeList {
+		tempStr := GetLevelLoopString([]*TreeNode{node})
+		if _, ok := checkRes[tempStr]; ok {
+			checkRes[tempStr] = tempStruct{
+				node:        node,
+				checkRepeat: true,
+			}
+		} else {
+			checkRes[tempStr] = tempStruct{
+				node:        node,
+				checkRepeat: false,
+			}
+		}
+	}
+
+	res := make([]*TreeNode, 0)
+	for _, checkNode := range checkRes {
+		if checkNode.checkRepeat {
+			res = append(res, checkNode.node)
+		}
+	}
+	return res
 }
