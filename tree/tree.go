@@ -931,3 +931,111 @@ func FindDuplicateSubtrees(root *TreeNode) []*TreeNode {
 	}
 	return res
 }
+
+/*问题*/
+/*
+给定两个二叉树，编写一个函数来检验它们是否相同。
+
+如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
+
+示例 1:
+
+输入:       1         1
+          / \       / \
+         2   3     2   3
+
+        [1,2,3],   [1,2,3]
+
+输出: true
+示例 2:
+
+输入:      1          1
+          /           \
+         2             2
+
+        [1,2],     [1,null,2]
+
+输出: false
+示例 3:
+
+输入:       1         1
+          / \       / \
+         2   1     1   2
+
+        [1,2,1],   [1,1,2]
+
+输出: false
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/same-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+递归判断，从上到下
+*/
+func IsSameTree(p *TreeNode, q *TreeNode) bool {
+	if p == nil && q == nil {
+		return true
+	}
+	if p != nil && q == nil {
+		return false
+	}
+	if p == nil && q != nil {
+		return false
+	}
+	if p.Val != q.Val {
+		return false
+	}
+	return IsSameTree(p.Left, q.Left) && IsSameTree(p.Right, q.Right)
+}
+
+/*问题*/
+/*
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+示例:
+
+输入: [1,2,3,null,5,null,4]
+输出: [1, 3, 4]
+解释:
+
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-right-side-view
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+直观来看，就是需要提取每一层最右边的节点，
+层序遍历即可，然后取每一层的最后一个节点的值
+*/
+func RightSideView(root *TreeNode) []int {
+	res := make([]int, 0)
+	if root == nil {
+		return res
+	}
+	lastLevel := []*TreeNode{root}
+	for len(lastLevel) != 0 {
+		thisLevel := make([]*TreeNode, 0)
+		for i, node := range lastLevel {
+			if i == len(lastLevel)-1 {
+				res = append(res, node.Val)
+			}
+
+			if node.Left != nil {
+				thisLevel = append(thisLevel, node.Left)
+			}
+			if node.Right != nil {
+				thisLevel = append(thisLevel, node.Right)
+			}
+		}
+		lastLevel = thisLevel
+	}
+	return res
+}

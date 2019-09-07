@@ -8,7 +8,7 @@ import (
 func TestTreeNode_Print(t *testing.T) {
 	nums := []int{4, 1, 3, 2, 16, 9, 10, 14, 8, 7}
 	root := ConstructCompleteTree(nums)
-	root.MidPrint()
+	root.PostPrint()
 }
 
 func TestConstrucTreeInLevelWithoutInvalidNode(t *testing.T) {
@@ -175,4 +175,10 @@ func TestFindDuplicateSubtrees(t *testing.T) {
 	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	list := FindDuplicateSubtrees(root)
 	fmt.Println(list)
+}
+
+func TestRightSideView(t *testing.T) {
+	nums := []int{1, 2, 3, -1, 5, -1, 4}
+	root := ConstructTreeInLevelWithoutInvalidNode(nums)
+	fmt.Println(RightSideView(root))
 }
