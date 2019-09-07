@@ -182,3 +182,15 @@ func TestRightSideView(t *testing.T) {
 	root := ConstructTreeInLevelWithoutInvalidNode(nums)
 	fmt.Println(RightSideView(root))
 }
+
+func TestBinarySearchTree(t *testing.T) {
+	root := ConstructBinarySearchTree([]int{30, 21, 13, 4, 25, 9, 31})
+
+	pParent, parentDirect, pFind := FindNodeInBinarySearchTree(root, 13)
+
+	fmt.Println(pParent, parentDirect, pFind)
+
+	root = DelNodeForBinarySearchTree(root, 21)
+
+	root.MidPrint()
+}

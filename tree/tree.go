@@ -1039,3 +1039,149 @@ func RightSideView(root *TreeNode) []int {
 	}
 	return res
 }
+
+/*搜索二叉树相关基本函数的实现*/
+
+func ConstructBinarySearchTree(nums []int) *TreeNode {
+	var root *TreeNode
+	for _, num := range nums {
+		root = AddNodeForBinarySearchTree(root, num)
+	}
+	return root
+}
+
+func AddNodeForBinarySearchTree(root *TreeNode, v int) *TreeNode {
+	pCur := root
+	var pParent *TreeNode = nil
+	for {
+		if pCur == nil {
+			if pParent == nil {
+				return &TreeNode{
+					Val:   v,
+					Left:  nil,
+					Right: nil,
+				}
+			} else {
+				if pParent.Val < v {
+					pParent.Right = &TreeNode{
+						Val: v,
+					}
+				} else {
+					pParent.Left = &TreeNode{
+						Val: v,
+					}
+				}
+				break
+			}
+		}
+
+		if pCur.Val == v {
+			break
+		}
+
+		if pCur.Val < v {
+			pParent = pCur
+			pCur = pCur.Right
+			continue
+		}
+
+		if pCur.Val > v {
+			pParent = pCur
+			pCur = pCur.Left
+			continue
+		}
+	}
+
+	return root
+}
+
+func FindNodeInBinarySearchTree(root *TreeNode, v int) (pParent *TreeNode, parentDirect bool, pRes *TreeNode) {
+	pCur := root
+	for pCur != nil {
+		if pCur.Val == v {
+			pRes = pCur
+			return
+		}
+		if pCur.Val < v {
+			pParent = pCur
+			parentDirect = false
+			pCur = pCur.Right
+		}
+		if pCur.Val > v {
+			pParent = pCur
+			parentDirect = true
+			pCur = pCur.Left
+		}
+	}
+	if pRes == nil {
+		pParent = nil
+	}
+	return
+}
+
+func DelNodeForBinarySearchTree(root *TreeNode, v int) *TreeNode {
+	pParent, parentDirect, pNodeDel := FindNodeInBinarySearchTree(root, v)
+	//如果没找到，直接返回
+	if pNodeDel == nil {
+		return root
+	}
+
+	//如果被删除节点是叶子节点，可直接删除
+	if pNodeDel.Left == nil && pNodeDel.Right == nil {
+		if parentDirect {
+			pParent.Left = nil
+		} else {
+			pParent.Right = nil
+		}
+		return root
+	}
+
+	//如果被删除节点的左节点或者右节点为空，则可直接将该节点删除，其子节点挂到其父节点下方
+	if pNodeDel.Left == nil {
+		if parentDirect {
+			pParent.Left = pNodeDel.Right
+		} else {
+			pParent.Right = pNodeDel.Right
+		}
+		return root
+	}
+	if pNodeDel.Right == nil {
+		if parentDirect {
+			pParent.Left = pNodeDel.Left
+		} else {
+			pParent.Right = pNodeDel.Left
+		}
+		return root
+	}
+
+	//如果被删除节点的左右子节点都不为空，需要找到被删除节点的右子树的最左下节点或者左子树的最右下节点（也就是数值上最靠近被删除节点的两个点）中一个来替换被删除节点
+	//此处选择左子树的最右下节点
+	pCur := pNodeDel.Left
+	var pCurParent *TreeNode
+	for pCur.Right != nil {
+		pCurParent = pCur
+		pCur = pCur.Right
+	}
+	if pCurParent == nil {
+		if parentDirect {
+			pParent.Left = pCur
+		} else {
+			pParent.Right = pCur
+		}
+		pCur.Right = pNodeDel.Right
+		return root
+	} else {
+		pCurParent.Right = nil
+		pCur.Left = pNodeDel.Left
+		pCur.Right = pNodeDel.Right
+		if parentDirect {
+			pParent.Left = pCur
+		} else {
+			pParent.Right = pCur
+		}
+	}
+
+	return root
+}
+
+/*搜索二叉树相关基本函数的实现*/
