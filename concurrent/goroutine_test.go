@@ -6,6 +6,7 @@ import (
 	"math"
 	"net"
 	"os"
+	"reflect"
 	"sync"
 	"testing"
 	"text/tabwriter"
@@ -435,6 +436,41 @@ func TestFuncPackChanInputAndClose(t *testing.T) {
 		fmt.Println("received: ", result)
 	}
 	fmt.Println("done")
+}
+
+func TestGetChanFromTwoGoroutine(t *testing.T) {
+	ch1 := make(chan int)
+	go func(ch chan int) {
+		select {
+		case a := <-ch:
+			fmt.Println("goroutine 1 get ch", a, reflect.TypeOf(a))
+		}
+	}(ch1)
+
+	go func(ch chan int) {
+		select {
+		case a := <-ch:
+			fmt.Println("goroutine 2 get ch", a, reflect.TypeOf(a))
+		}
+	}(ch1)
+
+	go func(ch chan int) {
+		select {
+		case a := <-ch:
+			fmt.Println("goroutine 3 get ch", a, reflect.TypeOf(a))
+		}
+	}(ch1)
+
+	go func(ch chan int) {
+		select {
+		case a := <-ch:
+			fmt.Println("goroutine 4 get ch", a, reflect.TypeOf(a))
+		}
+	}(ch1)
+
+	ch1 <- 10
+	close(ch1)
+	time.Sleep(1 * time.Second)
 }
 
 func TestBasicSelect(t *testing.T) {
