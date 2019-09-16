@@ -298,3 +298,67 @@ func MinCut(s string) int {
 	cutTime := 0
 	return minCutWithCutTimes(s, lastCutInd, curInd, cutTime)
 }
+
+/*问题*/
+/*
+给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+说明：
+
+拆分时可以重复使用字典中的单词。
+你可以假设字典中没有重复的单词。
+示例 1：
+
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+示例 2：
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     注意你可以重复使用字典中的单词。
+示例 3：
+
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-break
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+直观来看，首先肯定从头往后遍历，首先得保证前缀能组成，然后往后递推
+为了及时剪枝，需要记录从第n位开始拆分，无法组成
+*/
+func WordBreak(s string, wordDict []string) bool {
+	checkFailInd := make([]bool, len(s))
+	res, _ := checkWordBreak(s, wordDict, 0, checkFailInd)
+	return res
+}
+
+func checkWordBreak(s string, wordDict []string, startInd int, checkFailInd []bool) (bool, int) {
+	lengthTarget := len(s)
+	if startInd == lengthTarget {
+		return true, -1
+	}
+	if checkFailInd[startInd] {
+		return false, startInd
+	}
+	for _, word := range wordDict {
+		lengthWord := len(word)
+		if lengthWord+startInd > lengthTarget {
+			continue
+		}
+		if s[startInd:startInd+lengthWord] == word {
+			tmpRes, failInd := checkWordBreak(s, wordDict, startInd+lengthWord, checkFailInd)
+			if !tmpRes {
+				checkFailInd[failInd] = true
+			} else {
+				return true, -1
+			}
+		}
+	}
+	return false, startInd
+}
