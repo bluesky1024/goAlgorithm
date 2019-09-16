@@ -194,7 +194,7 @@ len(nums) > 2
 		nums[0] < nums[last] => 说明这段nums里是正常升序 return nums[0]
 		nums[0] == nums[last] => 什么都说明不了
 			取中位数 nums[mid]
-				nums[mid] >= nums[0] => 说明最小值在mid=>last之间
+				nums[mid] > nums[0] => 说明最小值在mid=>last之间
 				nums[mid] < nums[last] => 说明最小值在0=>mid之间
 				其他情况不可能出现（因为前提已经是升序了）
 
@@ -213,9 +213,75 @@ func FindMin(nums []int) int {
 	}
 
 	mid := (length - 1) / 2
-	if nums[mid] >= nums[0] {
+	if nums[mid] > nums[0] {
 		return FindMin(nums[mid:])
 	} else {
 		return FindMin(nums[:mid+1])
+	}
+}
+
+/*问题*/
+/*
+假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+
+( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+
+请找出其中最小的元素。
+
+注意数组中可能存在重复的元素。
+
+示例 1：
+
+输入: [1,3,5]
+输出: 1
+示例 2：
+
+输入: [2,2,2,0,1]
+输出: 0
+说明：
+
+这道题是 寻找旋转排序数组中的最小值 的延伸题目。
+允许重复会影响算法的时间复杂度吗？会如何影响，为什么？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+还是二分法，以下分情况讨论
+len(nums) == 1  返回 nums[0]
+len(nums) == 2  返回 min(nums[0],nums[1])
+len(nums) > 2
+	比较 nums[0],nums[last]
+		nums[0] < nums[last] => 说明这段nums里是正常升序 return nums[0]
+		nums[0] == nums[last] => 什么都说明不了
+			取中位数 nums[mid]
+				nums[mid] > nums[0] => 说明最小值在mid=>last之间
+				nums[mid] < nums[last] => 说明最小值在0=>mid之间
+				nums[last] <= nums[mid] <= nums[0]
+*/
+func FindMinV2(nums []int) int {
+	length := len(nums)
+	if length == 1 {
+		return nums[0]
+	}
+	if length == 2 {
+		return int(math.Min(float64(nums[0]), float64(nums[1])))
+	}
+
+	if nums[0] < nums[length-1] {
+		return nums[0]
+	}
+
+	mid := (length - 1) / 2
+	if nums[mid] > nums[0] {
+		return FindMinV2(nums[mid:])
+	} else if nums[mid] < nums[length-1] {
+		return FindMinV2(nums[:mid+1])
+	} else {
+		min1 := FindMinV2(nums[mid:])
+		min2 := FindMinV2(nums[:mid+1])
+		return int(math.Min(float64(min1), float64(min2)))
 	}
 }

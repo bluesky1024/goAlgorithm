@@ -18,3 +18,8 @@ func TestFindMin(t *testing.T) {
 	nums := []int{7, 0, 1, 2, 3, 5, 6}
 	fmt.Println(FindMin(nums))
 }
+
+func TestFindMinV2(t *testing.T) {
+	nums := []int{10, 1, 10, 10, 10}
+	fmt.Println(FindMinV2(nums))
+}
