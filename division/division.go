@@ -161,6 +161,23 @@ func Search(nums []int, target int) int {
 	return -1
 }
 
+//二分法精简版
+func SearchV2(nums []int, target int) int {
+	head := 0
+	tail := len(nums) - 1
+	for head <= tail {
+		mid := (head + tail) / 2
+		if nums[mid] < target {
+			head = mid + 1
+		} else if nums[mid] > target {
+			tail = mid - 1
+		} else {
+			return mid
+		}
+	}
+	return -1
+}
+
 /*问题*/
 /*
 假设按照升序排序的数组在预先未知的某个点上进行了旋转。

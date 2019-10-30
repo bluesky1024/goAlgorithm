@@ -3,10 +3,13 @@ package concurrent
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
+	"math/rand"
 	"net"
 	"os"
 	"reflect"
+	"strconv"
 	"sync"
 	"testing"
 	"text/tabwriter"
@@ -41,7 +44,7 @@ func TestBasicGoroutine(t *testing.T) {
 	go printNum()
 
 	for {
-		if i >= 100000 {
+		if i >= 10000000 {
 			break
 		}
 		i++
@@ -551,4 +554,253 @@ func TestBasicSelectWithTimeout(t *testing.T) {
 		fmt.Println("time out")
 	}
 	fmt.Println("end")
+}
+
+// 本来想试试是否可以在select case中监控变长的数组管道，似乎不行
+func TestCloseMultiGoroutines(t *testing.T) {
+	//程序退出控制
+	var wait sync.WaitGroup
+
+	//生产者生存控制管道
+	stopChan := make(chan bool)
+
+	//生产者
+	nodeNum := 10
+	for i := 0; i < nodeNum; i++ {
+		wait.Add(1)
+		go func(ind int, stopChan <-chan bool) {
+			defer func() {
+				fmt.Println("stop goroutine", ind)
+				wait.Done()
+			}()
+			stopTime := time.After(1 * time.Second)
+			for {
+				select {
+				case <-stopTime:
+					fmt.Println(ind, "time out")
+					return
+				default:
+				}
+				select {
+				case <-stopChan:
+					return
+				default:
+				}
+				time.Sleep(100 * time.Millisecond)
+				fmt.Println(ind, "is working")
+			}
+		}(i, stopChan)
+	}
+
+	fmt.Println("wait 2s")
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("close chan")
+	close(stopChan)
+
+	wait.Wait()
+	fmt.Println("close finish")
+}
+
+func TestSelectVariableLengthChan(t *testing.T) {
+	//节点数据准备
+	type chanNode struct {
+		sign chan bool
+	}
+
+	nodeNum := 3
+	nodes := make([]chanNode, nodeNum)
+
+	for i := 0; i < nodeNum; i++ {
+		nodes[i] = chanNode{
+			sign: make(chan bool),
+		}
+	}
+
+	//程序退出控制
+	var wait sync.WaitGroup
+
+	//生产者生存控制管道
+	stopChan := make(chan bool)
+
+	//生产者
+	for i := 0; i < nodeNum; i++ {
+		wait.Add(1)
+		go func(ind int, stopChan <-chan bool) {
+			defer func() {
+				wait.Done()
+				fmt.Println(ind, "stop produce")
+			}()
+			for {
+				select {
+				case <-stopChan:
+					return
+				case nodes[ind].sign <- true:
+					fmt.Println("node", ind, "produce")
+				}
+			}
+		}(i, stopChan)
+	}
+
+	//消费者协程
+	var consumerWait sync.WaitGroup
+	for i := 0; i < nodeNum*5; i++ {
+		consumerWait.Add(1)
+		go func(ind int) {
+			defer func() {
+				consumerWait.Done()
+				fmt.Println(ind, "stop consumer")
+			}()
+			stopTime := time.After(1 * time.Second)
+			for {
+				select {
+				case <-stopTime:
+					return
+				default:
+				}
+				select {
+				case <-nodes[0].sign:
+					fmt.Println("node 0 consume")
+				case <-nodes[1].sign:
+					fmt.Println("node 1 consume")
+				case <-nodes[2].sign:
+					fmt.Println("node 2 consume")
+				default:
+				}
+				time.Sleep(100 * time.Millisecond)
+			}
+		}(i)
+	}
+
+	//等待所有消费者停止消费
+	consumerWait.Wait()
+	fmt.Println("consumer stop")
+
+	//通知所有生产者协程关闭
+	close(stopChan)
+
+	//等待所有生产者协程关闭
+	wait.Wait()
+	fmt.Println("produce stop")
+
+	fmt.Println("task finish")
+}
+
+//如何优雅的关闭多生产者多消费者参与的管道，来自网上博客
+func TestCloseChannelPerfectly(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	log.SetFlags(0)
+
+	// ...
+	const MaxRandomNumber = 1000
+	const NumReceivers = 100
+	const NumSenders = 10
+
+	wgReceivers := sync.WaitGroup{}
+	wgReceivers.Add(NumReceivers)
+
+	// ...
+	dataCh := make(chan int, 100)
+	stopCh := make(chan struct{})
+	// stopCh is an additional signal channel.
+	// Its sender is the moderator goroutine shown below.
+	// Its reveivers are all senders and receivers of dataCh.
+	toStop := make(chan string, 1)
+	// The channel toStop is used to notify the moderator
+	// to close the additional signal channel (stopCh).
+	// Its senders are any senders and receivers of dataCh.
+	// Its reveiver is the moderator goroutine shown below.
+	// It must be a buffered channel.
+
+	var stoppedBy string
+
+	// moderator
+	go func() {
+		stoppedBy = <-toStop
+		close(stopCh)
+	}()
+
+	// senders
+	for i := 0; i < NumSenders; i++ {
+		go func(id string) {
+			for {
+				value := rand.Intn(MaxRandomNumber)
+				if value == 0 {
+					// Here, the try-send operation is to notify the
+					// moderator to close the additional signal channel.
+					select {
+					case toStop <- "sender#" + id:
+					default:
+					}
+					return
+				}
+
+				// The try-receive operation here is to try to exit the
+				// sender goroutine as early as possible. Try-receive
+				// try-send select blocks are specially optimized by the
+				// standard Go compiler, so they are very efficient.
+				select {
+				case <-stopCh:
+					return
+				default:
+				}
+
+				// Even if stopCh is closed, the first branch in this
+				// select block may be still not selected for some
+				// loops (and for ever in theory) if the send to dataCh
+				// is also non-blocking. If this is not acceptable,
+				// then the above try-receive operation is essential.
+				select {
+				case <-stopCh:
+					return
+				case dataCh <- value:
+				}
+			}
+		}(strconv.Itoa(i))
+	}
+
+	// receivers
+	for i := 0; i < NumReceivers; i++ {
+		go func(id string) {
+			defer wgReceivers.Done()
+
+			for {
+				// Same as the sender goroutine, the try-receive
+				// operation here is to try to exit the receiver
+				// goroutine as early as possible.
+				select {
+				case <-stopCh:
+					return
+				default:
+				}
+
+				// Even if stopCh is closed, the first branch in this
+				// select block may be still not selected for some
+				// loops (and for ever in theory) if the receive from
+				// dataCh is also non-blocking. If this is not acceptable,
+				// then the above try-receive operation is essential.
+				select {
+				case <-stopCh:
+					return
+				case value := <-dataCh:
+					if value == MaxRandomNumber-1 {
+						// The same trick is used to notify
+						// the moderator to close the
+						// additional signal channel.
+						select {
+						case toStop <- "receiver#" + id:
+						default:
+						}
+						return
+					}
+
+					log.Println(value)
+				}
+			}
+		}(strconv.Itoa(i))
+	}
+
+	// ...
+	wgReceivers.Wait()
+	log.Println("stopped by", stoppedBy)
 }
