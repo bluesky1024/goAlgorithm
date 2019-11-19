@@ -713,3 +713,19 @@ func DefangIPaddr(address string) string {
 	reg := regexp.MustCompile(`[\.]`)
 	return reg.ReplaceAllString(address, "[.]")
 }
+
+/*问题*/
+/*
+给定两个字符串a，b，求取其最大公共子序列长度
+此处子序列可不连续，但要保证前后顺序关系
+例：
+a:abcdefghi
+b: bdgh
+
+最大子序列为bdgh,长度为4
+*/
+/*思路*/
+/*
+首先，应该存在一定递归关系，a(i,j)应该只与a(i-1,j-1),a(i-1,j),a(i,j-1)这几个值有关
+具体关系需要细看
+*/

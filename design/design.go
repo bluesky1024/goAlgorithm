@@ -2,7 +2,9 @@ package design
 
 import (
 	"container/list"
+	"context"
 	"fmt"
+	"time"
 )
 
 /*问题*/
@@ -501,3 +503,106 @@ func (this *MyLinkedList) DeleteAtIndex(index int) {
  * obj.AddAtIndex(index,val);
  * obj.DeleteAtIndex(index);
  */
+
+/*问题*/
+/*
+设计定时器
+*/
+/*思路*/
+/*
+ */
+
+//系统自带定时器了解，便于查看源码
+func CheckSystemTimer() {
+	input := make(chan interface{})
+	go func() {
+		for i := 0; i < 5; i++ {
+			input <- i
+		}
+		input <- "hello, world"
+	}()
+
+	t1 := time.NewTimer(5 * time.Second)
+	t2 := time.NewTimer(10 * time.Second)
+
+	for {
+		select {
+		case msg := <-input:
+			fmt.Println(msg)
+
+		case <-t1.C:
+			println("5s timer")
+			t1.Reset(5 * time.Second)
+
+		case <-t2.C:
+			println("10s timer")
+			t2.Reset(10 * time.Second)
+		}
+	}
+}
+
+func CheckTimerTicker() {
+	time1 := time.NewTicker(3 * time.Second)
+	for {
+		select {
+		case <-time1.C:
+			fmt.Println("carry finish")
+			return
+			break
+		case a := <-time.After(1 * time.Second):
+			fmt.Println("time after", a)
+			break
+		}
+	}
+}
+
+//自行实现定时器
+
+type TimeTriggerFunc func(a int) int
+
+func SetTimeoutFunc(triggerFunc TimeTriggerFunc, t time.Duration, a int) {
+	ctx, _ := context.WithTimeout(context.Background(), t)
+	go func() {
+		select {
+		case <-ctx.Done():
+			b := triggerFunc(a)
+			fmt.Println(b)
+			break
+		}
+	}()
+}
+
+func catchPanic() {
+	defer func() {
+		panic("panic inner")
+	}()
+
+	//if err := recover(); err != nil {
+	//	fmt.Println("catch panic", err)
+	//}
+}
+
+func CheckDefer() {
+	defer func() {
+		fmt.Println("enter 1")
+		//if err := recover(); err != nil {
+		//	fmt.Println(123, err)
+		//}
+	}()
+
+	defer func() {
+		fmt.Println("enter 2")
+		if err := recover(); err != nil {
+			fmt.Println(234, err)
+		}
+	}()
+
+	defer func() {
+		fmt.Println("enter 3")
+		catchPanic()
+	}()
+
+	fmt.Println("aaa")
+	panic("panic trigger")
+	return
+}

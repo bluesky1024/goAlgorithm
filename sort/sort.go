@@ -103,6 +103,32 @@ func merge(left, right []int) (result []int) {
 	return
 }
 
+/*堆排序*/
+func HeapSort(nums []int) {
+	length := len(nums)
+	if length == 0 {
+		return
+	}
+	for i := 0; i < length; i++ {
+		minAjust(nums[i:])
+	}
+}
+
+func minAjust(nums []int) {
+	length := len(nums)
+	if length <= 1 {
+		return
+	}
+	for i := length/2 - 1; i >= 0; i-- {
+		if (2*i+1 <= length-1) && (nums[i] >= nums[2*i+1]) {
+			nums[i], nums[2*i+1] = nums[2*i+1], nums[i]
+		}
+		if (2*i+2 <= length-1) && (nums[i] >= nums[2*i+2]) {
+			nums[i], nums[2*i+2] = nums[2*i+2], nums[i]
+		}
+	}
+}
+
 /*问题*/
 /*
 给定由一些正数（代表长度）组成的数组 A，返回由其中三个长度组成的、面积不为零的三角形的最大周长。

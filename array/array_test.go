@@ -3067,3 +3067,26 @@ func TestLexicalOrder(t *testing.T) {
 func TestDailyTemperatures(t *testing.T) {
 	fmt.Println(DailyTemperatures([]int{73, 74, 75, 71, 69, 72, 76, 73}))
 }
+
+func TestGetRes(t *testing.T) {
+	nums := make([]int, 100)
+	for i := 0; i < 100; i++ {
+		nums[i] = i + 1
+	}
+	a := GetRes(nums, 240)
+	fmt.Println(a)
+}
+
+func TestDecimalToAny(t *testing.T) {
+	fmt.Println(DecimalToAny(114, 11))
+}
+
+func TestBaseSlice(t *testing.T) {
+	arr := [10]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	s1 := arr[:]
+	s2 := s1[1:3]
+	s3 := append(s1[:3], s1[4:]...)
+	fmt.Println(s1, s2, s3)
+	arr[3] = 2222
+	fmt.Println(len(s1), cap(s2), cap(s3))
+}

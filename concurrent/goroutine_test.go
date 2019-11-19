@@ -1,6 +1,7 @@
 package concurrent
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -803,4 +804,272 @@ func TestCloseChannelPerfectly(t *testing.T) {
 	// ...
 	wgReceivers.Wait()
 	log.Println("stopped by", stoppedBy)
+}
+
+func TestWriteChanInMultiGoroutine(t *testing.T) {
+	ch := make(chan int)
+	wg := sync.WaitGroup{}
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			select {
+			case a := <-ch:
+				fmt.Println("get chan num", a)
+				//a = a + 1
+				break
+			}
+		}()
+	}
+
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func(ii int, ch1 chan<- int) {
+			defer wg.Done()
+			ch1 <- ii
+		}(i, ch)
+	}
+
+	wg.Wait()
+	fmt.Println("finish")
+}
+
+func TestCancelCtxInParentCtx(t *testing.T) {
+	pCtx, pCancel := context.WithCancel(context.Background())
+
+	go func(ctx context.Context) {
+		cCtx, _ := context.WithTimeout(ctx, 3*time.Second)
+		select {
+		case <-cCtx.Done():
+			fmt.Println("finish")
+			break
+		}
+	}(pCtx)
+	time.Sleep(1 * time.Second)
+	pCancel()
+
+	time.Sleep(5 * time.Second)
+	fmt.Println("end")
+}
+
+func genChanWithCancel(ctx context.Context) <-chan int {
+	ch := make(chan int)
+	n := 0
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("context done")
+				close(ch)
+				return
+			default:
+				n++
+				fmt.Println("in", n)
+				ch <- n
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+
+	return ch
+}
+
+func TestCloseChanWithContent(t *testing.T) {
+	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
+	ch := genChanWithCancel(ctx)
+
+	for i := range ch {
+		fmt.Println("out", i)
+		time.Sleep(time.Second)
+	}
+}
+
+func TestChannel(t *testing.T) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*3))
+	num := testChanInOut(ctx)
+
+	time.Sleep(time.Second * 5)
+
+	for i := range num {
+		fmt.Println("out ", i)
+		time.Sleep(time.Second)
+	}
+	defer cancel()
+}
+
+func testChanInOut(ctx context.Context) <-chan int {
+	//缓冲通道和阻塞通道
+	c := make(chan int)
+	//c := make(chan int, 10)
+	n := 0
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("context done")
+				close(c)
+				return
+			default:
+				n++
+				fmt.Println("in ", n)
+				c <- n
+				fmt.Println("aaa")
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+
+	return c
+}
+
+func TestOrChannel(t *testing.T) {
+	var or func(chs ...<-chan interface{}) <-chan interface{}
+
+	or = func(chs ...<-chan interface{}) <-chan interface{} {
+		switch len(chs) {
+		case 0:
+			return nil
+		case 1:
+			return chs[0]
+		}
+
+		orDone := make(chan interface{})
+		go func() {
+			defer close(orDone)
+
+			switch len(chs) {
+			case 2:
+				select {
+				case <-chs[0]:
+				case <-chs[1]:
+				}
+			default:
+				select {
+				case <-chs[0]:
+				case <-chs[1]:
+				case <-chs[2]:
+				case <-or(append(chs[3:], orDone)...):
+				}
+			}
+		}()
+		return orDone
+	}
+
+	ch1 := make(chan interface{})
+	ch2 := make(chan interface{})
+	ch3 := make(chan interface{})
+
+	ch := or(ch1, ch2, ch3)
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		ch1 <- 1
+	}()
+	go func() {
+		time.Sleep(2 * time.Second)
+		ch2 <- 1
+	}()
+	go func() {
+		time.Sleep(3 * time.Second)
+		ch3 <- 1
+	}()
+
+	select {
+	case <-ch:
+		fmt.Println("get message")
+	}
+
+	sig := func(after time.Duration) <-chan interface{} {
+		c := make(chan interface{})
+		go func() {
+			defer func() {
+				close(c)
+				fmt.Println("call defer", after)
+			}()
+			time.Sleep(after)
+		}()
+		return c
+	}
+
+	start := time.Now()
+	<-or(
+		sig(2*time.Second),
+		sig(3*time.Second),
+		sig(4*time.Second),
+	)
+	fmt.Println("done after", time.Since(start))
+}
+
+func TestChanWithBufferInAGoroutine(t *testing.T) {
+	ch := make(chan int)
+	ch <- 1
+	select {
+	case <-ch:
+		fmt.Println("get ch")
+	}
+	close(ch)
+	fmt.Println("end")
+}
+
+func AppendWithCopy(i int, x int, a []int) []int {
+	if i <= len(a) {
+		fmt.Println("aaa")
+		a = append(a, 0)
+		copy(a[i+1:], a[i:])
+		a[i] = x
+		return a
+	} else {
+		a = append(a, x)
+		return a
+	}
+}
+
+func TestSlice(t *testing.T) {
+
+	num1 := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+	fmt.Println(num1, len(num1), cap(num1))
+	num1 = AppendWithCopy(1, 99, num1)
+	fmt.Println(num1, len(num1), cap(num1))
+
+	return
+
+	var numbers []int
+	fmt.Println(numbers, len(numbers), cap(numbers))
+
+	numbers = append(numbers, 0)
+	fmt.Println(numbers, len(numbers), cap(numbers))
+
+	numbers = append(numbers, 1, 2, 3, 4, 5, 6, 7)
+	fmt.Println(numbers, len(numbers), cap(numbers))
+
+	s1 := []int{11, 12, 13, 14, 15, 16, 17}
+	numbers = append(numbers, s1...)
+	fmt.Println(numbers, len(numbers), cap(numbers))
+
+	numbers = numbers[1:]
+	fmt.Println(numbers, len(numbers), cap(numbers))
+
+	numbers = append(numbers[:3], numbers[4:]...)
+	fmt.Println(numbers, len(numbers), cap(numbers))
+}
+
+func TestDefer(t *testing.T) {
+	f1 := func() (a int) {
+		a = 3
+		defer func() {
+			a = a + 1
+		}()
+		return a
+	}
+
+	f2 := func() int {
+		a := 3
+		defer func() {
+			a = a + 1
+		}()
+		return a
+	}
+
+	fmt.Println(f1())
+	fmt.Println(f2())
 }

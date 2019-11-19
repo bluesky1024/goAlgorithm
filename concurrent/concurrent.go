@@ -1,6 +1,10 @@
 package concurrent
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+	"time"
+)
 
 /*问题*/
 /*
@@ -76,4 +80,38 @@ func PrintMultiInOrder() {
 
 //实现2
 type printSingleChar struct {
+}
+
+//模拟死锁
+type deadLockValue struct {
+	mu    sync.Mutex
+	value int
+}
+
+func GenDealLock() {
+	wg := sync.WaitGroup{}
+	printSum := func(v1, v2 *deadLockValue) {
+		defer wg.Done()
+		v1.mu.Lock()
+		defer v1.mu.Unlock()
+
+		time.Sleep(3 * time.Second)
+
+		v2.mu.Lock()
+		defer v2.mu.Unlock()
+
+		fmt.Println("sum=", v1.value+v2.value)
+	}
+
+	a := deadLockValue{
+		value: 1,
+	}
+	b := deadLockValue{
+		value: 3,
+	}
+	wg.Add(2)
+	go printSum(&a, &b)
+	go printSum(&b, &a)
+	wg.Wait()
+	fmt.Println("finish")
 }

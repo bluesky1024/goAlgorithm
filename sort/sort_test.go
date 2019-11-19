@@ -34,6 +34,13 @@ func TestMergeSort(t *testing.T) {
 	fmt.Println(nums, res)
 }
 
+func TestHeapSort(t *testing.T) {
+	nums := []int{35, 14, 75, 51, 133, 21, 3, 12}
+	fmt.Println(nums)
+	HeapSort(nums)
+	fmt.Println(nums)
+}
+
 func TestLargestPerimeter(t *testing.T) {
 	fmt.Println(LargestPerimeter([]int{3, 6, 2, 3}))
 }

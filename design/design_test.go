@@ -3,6 +3,7 @@ package design
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestMyStack(t *testing.T) {
@@ -99,4 +100,27 @@ func TestMyLinkedList(t *testing.T) {
 	fmt.Println("get at index 2")
 	fmt.Println("res", linkedList.Get(2))
 	linkedList.Print()
+}
+
+func TestCheckSystemTimer(t *testing.T) {
+	CheckSystemTimer()
+}
+
+func TestCheckTimerTicker(t *testing.T) {
+	CheckTimerTicker()
+}
+
+func TestSetTimeoutFunc(t *testing.T) {
+	f := func(a int) int {
+		fmt.Println(a, "carry func")
+		return 12345
+	}
+
+	SetTimeoutFunc(TimeTriggerFunc(f), 1*time.Second, 1111111)
+
+	time.Sleep(3 * time.Second)
+}
+
+func TestCheckDefer(t *testing.T) {
+	CheckDefer()
 }

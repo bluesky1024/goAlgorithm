@@ -11,3 +11,7 @@ func TestPrintMultiInOrder(t *testing.T) {
 	PrintMultiInOrder()
 	time.Sleep(5 * time.Second)
 }
+
+func TestGenDealLock(t *testing.T) {
+	GenDealLock()
+}

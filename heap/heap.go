@@ -1,9 +1,5 @@
 package heap
 
-import (
-	"math"
-)
-
 /*
 基础：
 顺序存储的完全二叉树可以用数组表示
@@ -55,103 +51,73 @@ kthLargest.add(4);   // returns 8
 若比堆根大，则将堆根pop，并将该元素push进堆，然后调整成正常最小堆
 */
 type KthLargest struct {
-	k     int
-	len   int
+	K     int
 	kHeap []int
 }
 
-func Constructor(k int, nums []int) KthLargest {
+func MinAjust(nums []int) {
+	length := len(nums)
+	if length <= 1 {
+		return
+	}
+	for i := length/2 - 1; i >= 0; i-- {
+		adjustNode(nums, i)
+	}
+}
+
+func adjustNode(nums []int, i int) {
+	length := len(nums)
+	if (2*i+1 <= length-1) && (nums[i] > nums[2*i+1]) {
+		nums[i], nums[2*i+1] = nums[2*i+1], nums[i]
+		adjustNode(nums, 2*i+1)
+	}
+	if (2*i+2 <= length-1) && (nums[i] > nums[2*i+2]) {
+		nums[i], nums[2*i+2] = nums[2*i+2], nums[i]
+		adjustNode(nums, 2*i+2)
+	}
+}
+
+func ConstructorKthLargest(k int, nums []int) KthLargest {
 	res := KthLargest{
-		k:     k,
+		K:     k,
 		kHeap: make([]int, k),
 	}
-	var intMax = int(^uint(0) >> 1)
-	var intMin = ^intMax
-	for i := range res.kHeap {
-		res.kHeap[i] = intMin
+	for i, v := range nums {
+		if i >= k {
+			break
+		}
+		res.kHeap[i] = v
 	}
-	for _, v := range nums {
-		res.push(v)
+	MinAjust(res.kHeap)
+	for i := k; i < len(nums); i++ {
+		res.Add(nums[i])
 	}
 	return res
 }
 
-func (k *KthLargest) pop() {
-
-}
-
-func (k *KthLargest) push(v int) {
-	if k.len == 0 {
-		k.kHeap[0] = v
-		k.len++
-		return
+func (h *KthLargest) Add(v int) int {
+	if v < h.kHeap[0] {
+		return h.kHeap[0]
 	}
-	if k.len < k.k {
-		ind := k.len
-		k.kHeap[k.len] = v
-		k.len++
-		for {
-			indP := int(math.Floor(float64((ind - 1) / 2)))
-			if k.kHeap[ind] < k.kHeap[indP] {
-				k.kHeap[ind], k.kHeap[indP] = k.kHeap[indP], k.kHeap[ind]
-				ind = indP
-			}
-			if indP == 0 {
+
+	//插入新节点，将元素放到堆最后，从下往上调整
+	h.kHeap = append(h.kHeap, v)
+	ind := h.K
+	for ind > 0 {
+		if (ind-1)/2 >= 0 {
+			if h.kHeap[(ind-1)/2] > h.kHeap[ind] {
+				h.kHeap[(ind-1)/2], h.kHeap[ind] = h.kHeap[ind], h.kHeap[(ind-1)/2]
+			} else {
 				break
 			}
 		}
-
-		return
+		ind = (ind - 1) / 2
 	}
 
-	//比较第0个和v的大小
-	if k.kHeap[0] >= v {
-		return
-	}
+	//淘汰当前堆顶元素，将堆的最后一个元素放在堆顶，从上到下调整
+	h.kHeap[0] = h.kHeap[h.K]
+	h.kHeap = h.kHeap[:h.K]
+	adjustNode(h.kHeap, 0)
 
-	//将第0个数换成新push的数，从上往下调整
-	k.kHeap[0] = v
-	ind := 0
-	for {
-		indL := 2*ind + 1
-		indR := 2*ind + 2
-		if indL < k.len {
-			if indR < k.len {
-				//如果v 同时大于 l和r，从两者中选较小的互换
-				if v > k.kHeap[indL] {
-					if v > k.kHeap[indR] {
-						if k.kHeap[indL] >= k.kHeap[indR] {
-							k.kHeap[indR], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indR]
-							ind = indR
-						} else {
-							k.kHeap[indL], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indL]
-							ind = indL
-						}
-					} else {
-						k.kHeap[indL], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indL]
-						ind = indL
-					}
-					continue
-				}
-				if v > k.kHeap[indR] {
-					k.kHeap[indR], k.kHeap[ind] = k.kHeap[ind], k.kHeap[indR]
-					ind = indR
-					continue
-				}
-			} else {
-				if v > k.kHeap[indL] {
-					k.kHeap[indL], v = v, k.kHeap[indL]
-					ind = indL
-					continue
-				}
-			}
-		}
-		break
-	}
-	return
-}
-
-func (this *KthLargest) Add(v int) int {
-	this.push(v)
-	return this.kHeap[0]
+	return h.kHeap[0]
 }
