@@ -67,3 +67,8 @@ func TestScoreOfParentheses(t *testing.T) {
 func TestDefangIPaddr(t *testing.T) {
 	fmt.Println(DefangIPaddr("1.1.1.1"))
 }
+
+func TestLetterCombinations(t *testing.T) {
+	nums := "2345"
+	fmt.Println(LetterCombinations(nums))
+}

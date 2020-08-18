@@ -189,3 +189,82 @@ func BinaryTreePaths(root *tree.TreeNode) []string {
 	}
 	return res
 }
+
+/*问题*/
+/*
+有 N 个网络节点，标记为 1 到 N。
+
+给定一个列表 times，表示信号经过有向边的传递时间。 times[i] = (u, v, w)，其中 u 是源节点，v 是目标节点， w 是一个信号从源节点传递到目标节点的时间。
+
+现在，我们从某个节点 K 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 -1。
+
+
+
+示例：
+		2
+
+	1
+
+
+输入：times = [[2,1,1],[2,3,1],[3,4,1]], N = 4, K = 2
+输出：2
+
+
+注意:
+
+N 的范围在 [1, 100] 之间。
+K 的范围在 [1, N] 之间。
+times 的长度在 [1, 6000] 之间。
+所有的边 times[i] = (u, v, w) 都有 1 <= u, v <= N 且 0 <= w <= 100。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/network-delay-time
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+1.需要将原有的times [][]int结构改成map[startNode][][]int，方便后续逐个node定位数据
+2.从指定节点出发，记录可达节点，及其当前所需时间（多种可能中的最短时间）
+3.深度遍历到最后一级，没有新的节点可以延伸了，就停止
+*/
+func NetworkDelayTime(times [][]int, N int, K int) int {
+	relations := make(map[int][][]int)
+	for _, time := range times {
+		relations[time[0]] = append(relations[time[0]], []int{time[1], time[2]})
+	}
+
+	nodesPass := make(map[int]int)
+	nodesPass[K] = 0
+	searchNetworkNode(relations, nodesPass, K, 0)
+
+	maxTime := 0
+	for i := 1; i <= N; i++ {
+		time, ok := nodesPass[i]
+		if !ok {
+			return -1
+		}
+		if maxTime < time {
+			maxTime = time
+		}
+	}
+
+	return maxTime
+}
+
+func searchNetworkNode(relations map[int][][]int, nodesPass map[int]int, curNode int, curTime int) {
+	curNodeRelation, ok := relations[curNode]
+	if !ok {
+		return
+	}
+
+	for _, relation := range curNodeRelation {
+		nextNode := relation[0]
+
+		passData, ok := nodesPass[nextNode]
+		if !ok || passData > curTime+relation[1] {
+			nodesPass[nextNode] = curTime + relation[1]
+			searchNetworkNode(relations, nodesPass, nextNode, curTime+relation[1])
+			continue
+		}
+	}
+}
