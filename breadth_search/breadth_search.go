@@ -1,6 +1,7 @@
 package breadth_search
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -341,4 +342,123 @@ func NumSquaresV2(n int) int {
 		}
 	}
 	return dp[n]
+}
+
+/*问题*/
+/*
+给定一个二维的矩阵，包含 'X' 和 'O'（字母 O）。
+
+找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+
+示例:
+
+X X X X
+X O O X
+X X O X
+X O X X
+运行你的函数后，矩阵变为：
+
+X X X X
+X X X X
+X X X X
+X O X X
+解释:
+
+被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/surrounded-regions
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+有点像围棋？只是边界上不算被包围
+所以只要某块联通的白棋能延伸到边界上就算自由棋
+广度遍历，上下左右一路找下去，找到一团互联的白棋
+
+所以问题是遍历顺序，怎么记录互联关系，怎么记录哪些棋子已经被遍历过了
+
+然后发现思维僵化，应该反向寻找，在边界上找白棋，从边界白棋开始向内扩展，凡是扩展到的白棋，都是自由棋，合理
+
+存储的话，可以将自由棋先换成 非 'X' 和 'O' 的数值，如'N'
+待四个边界遍历完毕，再按层序遍历矩阵将所有的非'N'换成'X',将所有的'N'换成'O'
+*/
+func XOChessSolve(board [][]byte) {
+	length := len(board)
+	if length == 0 {
+		return
+	}
+
+	width := len(board[0])
+	//上边界
+	for i := 0; i < length; i++ {
+		if board[i][0] == 'O' {
+			XOChessSearch(board, length, width, i, 0)
+		}
+	}
+	fmt.Println("----------")
+	for i := 0; i < length; i++ {
+		fmt.Println(board[i])
+	}
+	//下边界
+	for i := 0; i < length; i++ {
+		if board[i][width-1] == 'O' {
+			XOChessSearch(board, length, width, i, width-1)
+		}
+	}
+	fmt.Println("----------")
+	for i := 0; i < length; i++ {
+		fmt.Println(board[i])
+	}
+	//左边界
+	for i := 0; i < width; i++ {
+		if board[0][i] == 'O' {
+			XOChessSearch(board, length, width, 0, i)
+		}
+	}
+	fmt.Println("----------")
+	for i := 0; i < length; i++ {
+		fmt.Println(board[i])
+	}
+	//右边界
+	for i := 0; i < width; i++ {
+		if board[length-1][i] == 'O' {
+			XOChessSearch(board, length, width, length-1, i)
+		}
+	}
+
+	fmt.Println("----------")
+	for i := 0; i < length; i++ {
+		fmt.Println(board[i])
+	}
+
+	//数据转换
+	for i := 0; i < length; i++ {
+		for j := 0; j < width; j++ {
+			if board[i][j] == 'N' {
+				board[i][j] = 'O'
+			} else {
+				board[i][j] = 'X'
+			}
+		}
+	}
+}
+
+func XOChessSearch(board [][]byte, length int, width int, curI int, curJ int) {
+	if board[curI][curJ] == 'X' || board[curI][curJ] == 'N' {
+		return
+	}
+	board[curI][curJ] = 'N'
+	if curI-1 >= 0 {
+		XOChessSearch(board, length, width, curI-1, curJ)
+	}
+	if curJ-1 >= 0 {
+		XOChessSearch(board, length, width, curI, curJ-1)
+	}
+	if curI+1 < length {
+		XOChessSearch(board, length, width, curI+1, curJ)
+	}
+	if curJ+1 < width {
+		XOChessSearch(board, length, width, curI, curJ+1)
+	}
 }

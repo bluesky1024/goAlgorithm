@@ -18,3 +18,14 @@ func TestNumSquaresV1(t *testing.T) {
 func TestNumSquaresV2(t *testing.T) {
 	fmt.Println(NumSquaresV2(5))
 }
+
+func TestXOChessSolve(t *testing.T) {
+	board := [][]byte{
+		{'X', 'O', 'X', 'O', 'X', 'O'},
+		{'O', 'X', 'O', 'X', 'O', 'X'},
+		{'X', 'O', 'X', 'O', 'X', 'O'},
+		{'O', 'X', 'O', 'X', 'O', 'X'},
+	}
+	XOChessSolve(board)
+	fmt.Println(board)
+}
