@@ -3,6 +3,7 @@ package dynamic
 import (
 	"fmt"
 	"math"
+	"sort"
 )
 
 /*题目*/
@@ -361,4 +362,130 @@ func checkWordBreak(s string, wordDict []string, startInd int, checkFailInd []bo
 		}
 	}
 	return false, startInd
+}
+
+/*问题*/
+/*
+你正在安装一个广告牌，并希望它高度最大。这块广告牌将有两个钢制支架，两边各一个。每个钢支架的高度必须相等。
+
+你有一堆可以焊接在一起的钢筋 rods。举个例子，如果钢筋的长度为 1、2 和 3，则可以将它们焊接在一起形成长度为 6 的支架。
+
+返回广告牌的最大可能安装高度。如果没法安装广告牌，请返回 0。
+
+
+
+示例 1：
+
+输入：[1,2,3,6]
+输出：6
+解释：我们有两个不相交的子集 {1,2,3} 和 {6}，它们具有相同的和 sum = 6。
+示例 2：
+
+输入：[1,2,3,4,5,6]
+输出：10
+解释：我们有两个不相交的子集 {2,3,5} 和 {4,6}，它们具有相同的和 sum = 10。
+示例 3：
+
+输入：[1,2]
+输出：0
+解释：没法安装广告牌，所以返回 0。
+
+
+提示：
+
+0 <= rods.length <= 20
+1 <= rods[i] <= 1000
+钢筋的长度总和最多为 5000
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/tallest-billboard
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+从全集里找出两个子集，使得他们的和相等，并且需要是所有可能中的最大值
+钢筋长度总和最多为5000，所以一边的长度至多为2500，超过就不可能两边长度相等
+元素长度可以先排序？优先组合最长的结果？
+N元素集合，假设已经找到最优结果，引入一个新的元素，所有平衡都被打破？
+每个元素有三种选择方式，a.left；b.right;c.抛弃
+组合方式 0<=3^n<=3^20=10^10... 有点大,再考虑一些剪支之类的操作，排序是否有必要？
+
+1  2  3  4  5
+1  3  6  10 15
+
+
+5  4  3  2  1
+15 10 6  3  1
+*/
+
+func TallestBillboard(rods []int) int {
+	if len(rods) < 0 {
+		return 0
+	}
+
+	//先排序
+	sort.Ints(rods)
+	//sort.Reverse(sort.IntSlice(rods))
+	rodSum := make([]int, len(rods))
+	for ind := range rods {
+		if ind == 0 {
+			rodSum[ind] = rods[ind]
+			continue
+		} else {
+			rodSum[ind] = rods[ind] + rodSum[ind-1]
+		}
+	}
+	reverseArr(rodSum)
+	reverseArr(rods)
+
+	left := 0
+	right := 0
+	max := 0
+	tallestBillboardWithLeftRightSet(rodSum, rods, left, right, &max)
+
+	return max
+}
+
+func reverseArr(arr []int) {
+	length := len(arr)
+	for i := 0; i < length/2; i++ {
+		temp := arr[length-1-i]
+		arr[length-1-i] = arr[i]
+		arr[i] = temp
+	}
+}
+
+func tallestBillboardWithLeftRightSet(rodSum []int, rods []int, left int, right int, curMax *int) {
+	if len(rods) == 0 {
+		return
+	}
+
+	//如果所有数据都用上，还是没有当前最大值大，就没必要循环了
+	if left+right+rodSum[0] < 2**curMax {
+		return
+	}
+
+	//放进左边集合
+	if left+rods[0] == right && right > *curMax {
+		*curMax = right
+	}
+	if right <= 2500 && left+rods[0] <= 2500 && int(math.Abs(float64(left+rods[0]-right))) <= rodSum[0] {
+		tallestBillboardWithLeftRightSet(rodSum[1:], rods[1:], left+rods[0], right, curMax)
+	}
+
+	//放进右边集合
+	if right+rods[0] == left && left > *curMax {
+		*curMax = left
+	}
+	if left <= 2500 && right+rods[0] <= 2500 && int(math.Abs(float64(right+rods[0]-left))) <= rodSum[0] {
+		tallestBillboardWithLeftRightSet(rodSum[1:], rods[1:], left, right+rods[0], curMax)
+	}
+
+	//抛弃
+	if right == left && left > *curMax {
+		*curMax = left
+	}
+	if left <= 2500 && right <= 2500 && int(math.Abs(float64(right-left))) <= rodSum[0] {
+		tallestBillboardWithLeftRightSet(rodSum[1:], rods[1:], left, right, curMax)
+	}
 }

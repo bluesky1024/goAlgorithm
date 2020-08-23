@@ -44,3 +44,14 @@ func TestWordBreak(t *testing.T) {
 	//fmt.Println(WordBreak("java1go", strs))
 
 }
+
+func TestTallestBillboard(t *testing.T) {
+	//rods := []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 50, 50, 50, 150, 150, 150, 100, 100, 100, 123}
+	//fmt.Println(TallestBillboard(rods))
+
+	//rods := []int{1, 2, 3, 4, 5, 6}
+	//fmt.Println(TallestBillboard(rods))
+
+	rods := []int{94, 98, 87, 111, 86, 97, 101, 110, 100, 91, 98, 106, 114, 109, 107, 87, 104}
+	fmt.Println(TallestBillboard(rods))
+}
