@@ -1041,3 +1041,186 @@ func DecimalToAny(num int, n int) string {
 	}
 	return res
 }
+
+/*问题*/
+/*
+给你一个整数 n 和一个整数数组 rounds 。有一条圆形赛道由 n 个扇区组成，扇区编号从 1 到 n 。现将在这条赛道上举办一场马拉松比赛，该马拉松全程由 m 个阶段组成。其中，第 i 个阶段将会从扇区 rounds[i - 1] 开始，到扇区 rounds[i] 结束。举例来说，第 1 阶段从 rounds[0] 开始，到 rounds[1] 结束。
+
+请你以数组形式返回经过次数最多的那几个扇区，按扇区编号 升序 排列。
+
+注意，赛道按扇区编号升序逆时针形成一个圆（请参见第一个示例）。
+
+
+
+示例 1：
+
+
+
+输入：n = 4, rounds = [1,3,1,2]
+输出：[1,2]
+解释：本场马拉松比赛从扇区 1 开始。经过各个扇区的次序如下所示：
+1 --> 2 --> 3（阶段 1 结束）--> 4 --> 1（阶段 2 结束）--> 2（阶段 3 结束，即本场马拉松结束）
+其中，扇区 1 和 2 都经过了两次，它们是经过次数最多的两个扇区。扇区 3 和 4 都只经过了一次。
+示例 2：
+
+输入：n = 2, rounds = [2,1,2,1,2,1,2,1,2]
+输出：[2]
+示例 3：
+
+输入：n = 7, rounds = [1,3,5,7]
+输出：[1,2,3,4,5,6,7]
+
+
+提示：
+
+2 <= n <= 100
+1 <= m <= 100
+rounds.length == m + 1
+1 <= rounds[i] <= n
+rounds[i] != rounds[i + 1] ，其中 0 <= i < m
+*/
+/*思路*/
+/*
+这道题最难的是理解题意
+
+*/
+func MostVisited(n int, rounds []int) []int {
+	length := len(rounds)
+	cntMap := make(map[int]int)
+	for i := 1; i <= n; i++ {
+		cntMap[i] = 0
+	}
+	for i := 1; i < length; i++ {
+		s := rounds[i-1]
+		e := rounds[i]
+
+		//s -> e左闭右开区间每个数都+1
+		if s < e {
+			for ind := s; ind < e; ind++ {
+				cntMap[ind] = cntMap[ind] + 1
+			}
+		}
+
+		//e -> n -> 1->s 左闭右开区间每个数都+1
+		if s > e {
+			for ind := s; ind <= n; ind++ {
+				cntMap[ind] = cntMap[ind] + 1
+			}
+			for ind := 1; i < e; ind++ {
+				cntMap[ind] = cntMap[ind] + 1
+			}
+		}
+	}
+
+	//右开区间，所以补上最后一次的计数
+	cntMap[rounds[length-1]] = cntMap[rounds[length-1]] + 1
+
+	//找出最大值
+	curMax := 0
+	reverCntMap := make(map[int][]int)
+	for ind, cnt := range cntMap {
+		reverCntMap[cnt] = append(reverCntMap[cnt], ind)
+		if curMax < cnt {
+			curMax = cnt
+		}
+	}
+
+	return reverCntMap[curMax]
+}
+
+/*问题*/
+/*
+在一排座位（ seats）中，1 代表有人坐在座位上，0 代表座位上是空的。
+
+至少有一个空座位，且至少有一人坐在座位上。
+
+亚历克斯希望坐在一个能够使他与离他最近的人之间的距离达到最大化的座位上。
+
+返回他到离他最近的人的最大距离。
+
+
+
+示例 1：
+
+输入：[1,0,0,0,1,0,1]
+输出：2
+解释：
+如果亚历克斯坐在第二个空位（seats[2]）上，他到离他最近的人的距离为 2 。
+如果亚历克斯坐在其它任何一个空位上，他到离他最近的人的距离为 1 。
+因此，他到离他最近的人的最大距离是 2 。
+示例 2：
+
+输入：[1,0,0,0]
+输出：3
+解释：
+如果亚历克斯坐在最后一个座位上，他离最近的人有 3 个座位远。
+这是可能的最大距离，所以答案是 3 。
+
+
+提示：
+
+2 <= seats.length <= 20000
+seats 中只含有 0 和 1，至少有一个 0，且至少有一个 1。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximize-distance-to-closest-person
+*/
+/*思路*/
+/*
+正向遍历一次，再反向遍历一次，取两者中较小值o(n)
+    1,0,0,0,1,0,1
+->  0 1 2 3 0 1 0
+    0 3 2 1 0 1 0  <-
+
+    0 1 2 1 0 1 0
+max 2
+
+有个细节注意点：如果第一位就是0，则按顺序遍历可能出现距离无穷大的情况，在代码实现中用-1表示无穷大
+*/
+func MaxDistToClosest(seats []int) int {
+	disList := make([]int, len(seats))
+	//正向遍历
+	curDis := -1 //用-1表示无穷大
+	for i, d := range seats {
+		if d == 1 {
+			curDis = 0
+			disList[i] = 0
+			continue
+		}
+		if curDis >= 0 {
+			curDis++
+		}
+		disList[i] = curDis
+	}
+
+	//反向遍历
+	curDis = -1
+	for i := len(seats) - 1; i >= 0; i-- {
+		if seats[i] == 1 {
+			curDis = 0
+			disList[i] = 0
+			continue
+		}
+		if curDis >= 0 {
+			curDis++
+
+			if curDis < disList[i] || disList[i] == -1 {
+				disList[i] = curDis
+			}
+		}
+		//else {
+		//	//curDis还是-1无穷大，则距离一定是用正向的距离，不需要比较
+		//	disList[]
+		//}
+	}
+
+	//遍历disList,取得最大值
+	max := 0
+	for _, d := range disList {
+		if d > max {
+			max = d
+		}
+	}
+
+	return max
+}

@@ -3090,3 +3090,13 @@ func TestBaseSlice(t *testing.T) {
 	arr[3] = 2222
 	fmt.Println(len(s1), cap(s2), cap(s3))
 }
+
+func TestMostVisited(t *testing.T) {
+	fmt.Println(MostVisited(2, []int{2, 1, 2, 1, 2, 1, 2, 1, 2}))
+}
+
+func TestMaxDistToClosest(t *testing.T) {
+	//fmt.Println(MaxDistToClosest([]int{1, 0, 0, 0, 1, 0, 1}))
+	//fmt.Println(MaxDistToClosest([]int{1, 0, 0, 0}))
+	fmt.Println(MaxDistToClosest([]int{0, 1}))
+}
