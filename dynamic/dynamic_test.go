@@ -55,3 +55,7 @@ func TestTallestBillboard(t *testing.T) {
 	rods := []int{94, 98, 87, 111, 86, 97, 101, 110, 100, 91, 98, 106, 114, 109, 107, 87, 104}
 	fmt.Println(TallestBillboard(rods))
 }
+
+func TestCountNumbersWithUniqueDigits(t *testing.T) {
+	fmt.Println(CountNumbersWithUniqueDigits(13))
+}

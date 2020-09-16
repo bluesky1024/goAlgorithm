@@ -494,3 +494,40 @@ func tallestBillboardWithLeftRightSet(rodSum []int, rods []int, left int, right 
 		tallestBillboardWithLeftRightSet(rodSum[1:], rods[1:], left, right, curMax)
 	}
 }
+
+/*问题*/
+/*
+给定一个非负整数 n，计算各位数字都不同的数字 x 的个数，其中 0 ≤ x < 10n 。
+
+示例:
+
+输入: 2
+输出: 91
+解释: 答案应为除去 11,22,33,44,55,66,77,88,99 外，在 [0,100) 区间内的所有数字。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/count-numbers-with-unique-digits
+*/
+/*思路*/
+/*
+y(n) = y(n-1) + x(n)
+x(n)表示 10^(n-1)<=x<10^n 中各位数字都不重复的数字个数
+x(n)限定了左数第一位不能是0，有1-9 9种可能，剩下n位，因为要求都不能重复，所以从剩下的1-9种剩下的数字和0共9位种挑选n-1个数字随机排序
+也就是 9 * A[9 n-1]
+
+另外，如果超过10位，那0-9这10位数字明显不够用了，往上扩展肯定找不到新的符合条件的数字了，直接调整到CountNumbersWithUniqueDigits(10)
+*/
+func CountNumbersWithUniqueDigits(n int) int {
+	if n > 10 {
+		return CountNumbersWithUniqueDigits(10)
+	}
+	if n == 0 {
+		return 1
+	}
+
+	sum := 1
+	for i := 9; i > (10 - n); i-- {
+		sum = sum * i
+	}
+	return CountNumbersWithUniqueDigits(n-1) + sum*9
+}
