@@ -59,3 +59,9 @@ func TestTallestBillboard(t *testing.T) {
 func TestCountNumbersWithUniqueDigits(t *testing.T) {
 	fmt.Println(CountNumbersWithUniqueDigits(13))
 }
+
+func TestMaxProfit(t *testing.T) {
+	fmt.Println(MaxProfit([]int{7, 6, 5, 4, 3, 2, 1}))
+
+	fmt.Println(MaxProfit([]int{2, 1, 4}))
+}
