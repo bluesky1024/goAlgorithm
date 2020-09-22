@@ -2,6 +2,7 @@ package string
 
 import (
 	"fmt"
+	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
 
@@ -71,4 +72,8 @@ func TestDefangIPaddr(t *testing.T) {
 func TestLetterCombinations(t *testing.T) {
 	nums := "2345"
 	fmt.Println(LetterCombinations(nums))
+}
+
+func TestOptimalDivision(t *testing.T) {
+	assert.Equal(t, OptimalDivision([]int{1000, 100, 10, 2}), "1000/(100/10/2)")
 }
