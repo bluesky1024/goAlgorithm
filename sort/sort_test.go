@@ -2,6 +2,7 @@ package sort
 
 import (
 	"fmt"
+	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
 
@@ -47,4 +48,8 @@ func TestLargestPerimeter(t *testing.T) {
 
 func TestPancakeSort(t *testing.T) {
 	fmt.Println(PancakeSort([]int{3, 2, 4, 1}))
+}
+
+func TestGetStrongest(t *testing.T) {
+	assert.Equal(t, GetStrongest([]int{6, 7, 11, 7, 6, 8}, 5), []int{11, 8, 6, 6, 7})
 }
