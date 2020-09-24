@@ -124,3 +124,68 @@ func TestReverseListV1(t *testing.T) {
 	fmt.Println("after reverse v2")
 	a.Prinf()
 }
+
+func TestMergeTwoList(t *testing.T) {
+	a := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 3,
+			Next: &ListNode{
+				Val: 5,
+				Next: &ListNode{
+					Val: 7,
+					Next: &ListNode{
+						Val: 9,
+						Next: &ListNode{
+							Val:  11,
+							Next: nil,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	b := &ListNode{
+		Val: 2,
+		Next: &ListNode{
+			Val: 4,
+			Next: &ListNode{
+				Val: 6,
+				Next: &ListNode{
+					Val: 8,
+					Next: &ListNode{
+						Val: 10,
+						Next: &ListNode{
+							Val:  12,
+							Next: nil,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	c := &ListNode{
+		Val: 3,
+		Next: &ListNode{
+			Val: 6,
+			Next: &ListNode{
+				Val: 9,
+				Next: &ListNode{
+					Val: 12,
+					Next: &ListNode{
+						Val: 15,
+						Next: &ListNode{
+							Val:  18,
+							Next: nil,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	d := MergeKLists([]*ListNode{a, b, c})
+	d.Prinf()
+}
