@@ -2,6 +2,7 @@ package array
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -3099,4 +3100,13 @@ func TestMaxDistToClosest(t *testing.T) {
 	//fmt.Println(MaxDistToClosest([]int{1, 0, 0, 0, 1, 0, 1}))
 	//fmt.Println(MaxDistToClosest([]int{1, 0, 0, 0}))
 	fmt.Println(MaxDistToClosest([]int{0, 1}))
+}
+
+func TestMaxIncreaseKeepingSkyline(t *testing.T) {
+	assert.Equal(t, MaxIncreaseKeepingSkyline([][]int{
+		[]int{3, 0, 8, 4},
+		[]int{2, 4, 5, 7},
+		[]int{9, 2, 6, 3},
+		[]int{0, 3, 1, 0},
+	}), 35)
 }

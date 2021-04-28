@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"context"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -605,4 +606,267 @@ func CheckDefer() {
 	fmt.Println("aaa")
 	panic("panic trigger")
 	return
+}
+
+/*问题*/
+/*
+传送带上的包裹必须在 D 天内从一个港口运送到另一个港口。
+
+传送带上的第 i 个包裹的重量为 weights[i]。每一天，我们都会按给出重量的顺序往传送带上装载包裹。我们装载的重量不会超过船的最大运载重量。
+
+返回能在 D 天内将传送带上的所有包裹送达的船的最低运载能力。
+
+
+
+示例 1：
+
+输入：weights = [1,2,3,4,5,6,7,8,9,10], D = 5
+输出：15
+解释：
+船舶最低载重 15 就能够在 5 天内送达所有包裹，如下所示：
+第 1 天：1, 2, 3, 4, 5
+第 2 天：6, 7
+第 3 天：8
+第 4 天：9
+第 5 天：10
+
+请注意，货物必须按照给定的顺序装运，因此使用载重能力为 14 的船舶并将包装分成 (2, 3, 4, 5), (1, 6, 7), (8), (9), (10) 是不允许的。
+示例 2：
+
+输入：weights = [3,2,2,4,1,4], D = 3
+输出：6
+解释：
+船舶最低载重 6 就能够在 3 天内送达所有包裹，如下所示：
+第 1 天：3, 2
+第 2 天：2, 4
+第 3 天：1, 4
+示例 3：
+
+输入：weights = [1,2,3,1,1], D = 4
+输出：3
+解释：
+第 1 天：1
+第 2 天：2
+第 3 天：3
+第 4 天：1, 1
+
+
+提示：
+
+1 <= D <= weights.length <= 50000
+1 <= weights[i] <= 500
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/capacity-to-ship-packages-within-d-days
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+思路一
+过于愚蠢
+递归+剪枝
+按weights的内容今天搬运还是之后搬运分为两波
+剪枝方式
+如果天数<weight数组，可以舍弃
+如果weight数组已经大于其他组最大值，可以舍弃
+思路二
+结果可选范围为从1到sum(weights)
+直接遍历都能完成，但是可以使用二分查找进行优化
+*/
+func ShipWithinDays(weights []int, D int) int {
+	return shipWithinDays(weights, D, 0)
+}
+
+func shipWithinDays(weights []int, D int, thisDayOriWeight int) int {
+	// weights 空了，直接返回0
+	if len(weights) == 0 {
+		return thisDayOriWeight
+	}
+
+	// 最后一天，只能全部搬运了
+	if D == 1 {
+		sum := thisDayOriWeight
+		for _, weight := range weights {
+			sum += weight
+		}
+		return sum
+	}
+
+	// weights[0] 算在今天搬运
+	maxWeight1 := shipWithinDays(weights[1:], D, thisDayOriWeight+weights[0])
+	if thisDayOriWeight+weights[0] > maxWeight1 {
+		maxWeight1 = thisDayOriWeight + weights[0]
+	}
+
+	// weights[0] 不算在今天搬运
+	maxWeight2 := shipWithinDays(weights, D-1, 0)
+	if thisDayOriWeight > maxWeight2 {
+		maxWeight2 = thisDayOriWeight
+	}
+
+	if maxWeight1 > maxWeight2 {
+		return maxWeight2
+	}
+	return maxWeight1
+}
+
+func ShipWithinDaysV2(weights []int, D int) int {
+	isMatch := func(weights []int, D int, curData int) bool {
+		dayCnt := 1
+		curDayWeight := 0
+		for _, weight := range weights {
+			if curDayWeight+weight > curData {
+				dayCnt++
+				curDayWeight = weight
+				continue
+			}
+			curDayWeight += weight
+		}
+		return dayCnt <= D
+	}
+
+	min := 0
+	max := 0
+	for _, weight := range weights {
+		if weight > min {
+			min = weight
+		}
+		max += weight
+	}
+	cur := (min + max) / 2
+	for {
+		if !isMatch(weights, D, cur) {
+			min = cur + 1
+		} else {
+			max = cur
+		}
+
+		if (min+max)/2 == cur {
+			break
+		}
+		cur = (min + max) / 2
+	}
+	return cur
+}
+
+/*问题*/
+/*
+罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。
+
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个整数，将其转为罗马数字。输入确保在 1 到 3999 的范围内。
+
+
+
+示例 1:
+
+输入: 3
+输出: "III"
+示例 2:
+
+输入: 4
+输出: "IV"
+示例 3:
+
+输入: 9
+输出: "IX"
+示例 4:
+
+输入: 58
+输出: "LVIII"
+解释: L = 50, V = 5, III = 3.
+示例 5:
+
+输入: 1994
+输出: "MCMXCIV"
+解释: M = 1000, CM = 900, XC = 90, IV = 4.
+
+
+提示：
+
+1 <= num <= 3999
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/integer-to-roman
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+首先肯定需要将数据从高进制到低进制取整取模
+最大输入是3999，所以顶多是4个X
+
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+*/
+func IntToRoman(num int) string {
+	curData := num
+	res := ""
+
+	// M 渲染
+	numM := curData / 1000
+	if numM > 0 {
+		res += strings.Repeat("M", numM)
+	}
+	curData = curData % 1000
+
+	// 100 - 1000 渲染
+	num100 := curData / 100
+	if num100 == 9 {
+		res += "CM"
+	} else if num100 == 4 {
+		res += "CD"
+	} else if num100 >= 5 {
+		res += "D"
+		res += strings.Repeat("C", (curData%500)/100)
+	} else {
+		res += strings.Repeat("C", num100)
+	}
+	curData = curData % 100
+
+	// 10 - 100 渲染
+	num10 := curData / 10
+	if num10 == 9 {
+		res += "XC"
+	} else if num10 == 4 {
+		res += "XL"
+	} else if num10 >= 5 {
+		res += "L"
+		res += strings.Repeat("X", (curData%50)/10)
+	} else {
+		res += strings.Repeat("X", num10)
+	}
+	curData = curData % 10
+
+	// 1 - 10 渲染
+	if curData == 9 {
+		res += "IX"
+	} else if curData == 4 {
+		res += "IV"
+	} else if curData >= 5 {
+		res += "V"
+		res += strings.Repeat("I", curData%5)
+	} else {
+		res += strings.Repeat("I", curData)
+	}
+
+	return res
 }

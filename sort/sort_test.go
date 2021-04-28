@@ -2,7 +2,7 @@ package sort
 
 import (
 	"fmt"
-	"gopkg.in/go-playground/assert.v1"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -24,7 +24,7 @@ func TestQuickSort(t *testing.T) {
 	nums := []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 10}
 	//nums := []int{4, 2, 7, 3, 1, 6}
 	QuickSort(nums)
-	fmt.Println(nums)
+	assert.Equal(t, nums, []int{10, 9, 8, 7, 6, 5, 4, 3, 2, 1})
 }
 
 func TestMergeSort(t *testing.T) {

@@ -2,6 +2,7 @@ package design
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -123,4 +124,21 @@ func TestSetTimeoutFunc(t *testing.T) {
 
 func TestCheckDefer(t *testing.T) {
 	CheckDefer()
+	assert.Nil(t, nil)
+}
+
+func TestShipWithinDays(t *testing.T) {
+	assert.Equal(t, ShipWithinDaysV2([]int{1}, 1), 1)
+	assert.Equal(t, ShipWithinDaysV2([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 5), 15)
+	assert.Equal(t, ShipWithinDaysV2([]int{1, 2, 3, 1, 1}, 4), 3)
+	assert.Equal(t, ShipWithinDaysV2([]int{3, 2, 2, 4, 1, 4}, 3), 6)
+	assert.Equal(t, ShipWithinDaysV2([]int{180, 373, 75, 82, 497, 23, 303, 299, 53, 426, 152, 314, 206, 433, 283, 370, 179, 254, 265, 431, 453, 17, 189, 224}, 12), 631)
+}
+
+func TestIntToRoman(t *testing.T) {
+	assert.Equal(t, IntToRoman(3), "III")
+	assert.Equal(t, IntToRoman(4), "IV")
+	assert.Equal(t, IntToRoman(9), "IX")
+	assert.Equal(t, IntToRoman(58), "LVIII")
+	assert.Equal(t, IntToRoman(1994), "MCMXCIV")
 }

@@ -14,9 +14,14 @@ func (l *ListNode) Prinf() {
 	cur := l
 	for cur != nil {
 		fmt.Printf("%p\n", cur)
-		fmt.Println(cur.Val)
 		cur = cur.Next
 	}
+	cur = l
+	for cur != nil {
+		fmt.Printf("%d ", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Println("---")
 }
 
 /*问题*/

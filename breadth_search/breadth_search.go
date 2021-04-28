@@ -462,3 +462,210 @@ func XOChessSearch(board [][]byte, length int, width int, curI int, curJ int) {
 		XOChessSearch(board, length, width, curI, curJ+1)
 	}
 }
+
+/*问题*/
+/*
+用以太网线缆将 n 台计算机连接成一个网络，计算机的编号从 0 到 n-1。线缆用 connections 表示，其中 connections[i] = [a, b] 连接了计算机 a 和 b。
+
+网络中的任何一台计算机都可以通过网络直接或者间接访问同一个网络中其他任意一台计算机。
+
+给你这个计算机网络的初始布线 connections，你可以拔开任意两台直连计算机之间的线缆，并用它连接一对未直连的计算机。请你计算并返回使所有计算机都连通所需的最少操作次数。如果不可能，则返回 -1 。
+
+
+
+示例 1：
+
+
+
+输入：n = 4, connections = [[0,1],[0,2],[1,2]]
+输出：1
+解释：拔下计算机 1 和 2 之间的线缆，并将它插到计算机 1 和 3 上。
+示例 2：
+
+
+
+输入：n = 6, connections = [[0,1],[0,2],[0,3],[1,2],[1,3]]
+输出：2
+示例 3：
+
+输入：n = 6, connections = [[0,1],[0,2],[0,3],[1,2]]
+输出：-1
+解释：线缆数量不足。
+示例 4：
+
+输入：n = 5, connections = [[0,1],[0,2],[3,4],[2,3]]
+输出：0
+
+
+提示：
+
+1 <= n <= 10^5
+1 <= connections.length <= min(n*(n-1)/2, 10^5)
+connections[i].length == 2
+0 <= connections[i][0], connections[i][1] < n
+connections[i][0] != connections[i][1]
+没有重复的连接。
+两台计算机不会通过多条线缆连接。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/number-of-operations-to-make-network-connected
+*/
+/*思路*/
+/*
+存下来目前条件下可达的节点集，如果某条线两端的节点都已经在某个可达节点集里，则这条边就可以删除，也就是可以给别人用
+
+遍历所有的边，看看最终组合成多少个互相独立的节点集，单个节点不跟外界沟通的独立成为一个节点集
+假设总共n个独立的集合的话，需要n-1条数据连接
+然后判断上述删除的多余边是否>=n-1,若是则返回n-1，若否，则返回-1
+*/
+func findNumInSet(num int, setList [][]int) int {
+	for ind, set := range setList {
+		for _, n := range set {
+			if num == n {
+				return ind
+			}
+		}
+	}
+
+	return -1
+}
+
+func MakeConnected(n int, connections [][]int) int {
+	setList := make([][]int, 0)
+
+	//遍历找到所有的互联小集合,同时找出多余线
+	invalidConnCnt := 0
+	for _, connection := range connections {
+		p1 := findNumInSet(connection[0], setList)
+		p2 := findNumInSet(connection[1], setList)
+
+		if p1 == -1 && p2 == -1 {
+			setList = append(setList, []int{connection[0], connection[1]})
+			continue
+		}
+
+		if p1 == -1 {
+			setList[p2] = append(setList[p2], connection[0])
+			continue
+		}
+
+		if p2 == -1 {
+			setList[p1] = append(setList[p1], connection[1])
+			continue
+		}
+
+		//若p1 ！= p2,通过这条边就可以连接起来,将p2的数据挪到p1，同时删除p2
+		if p1 != p2 {
+			setList[p1] = append(setList[p1], setList[p2]...)
+			setList = append(setList[:p2], setList[p2+1:]...)
+			continue
+		}
+
+		//说明两端其实都在集合里，本来就是互通的，这条边是多余的
+		invalidConnCnt++
+	}
+
+	//遍历找到所有的独立节点
+	needConnNodeCnt := 0
+	for num := 0; num < n; num++ {
+		if findNumInSet(num, setList) == -1 {
+			needConnNodeCnt++
+		}
+	}
+
+	if len(setList) == 1 && needConnNodeCnt == 0 {
+		return 0
+	}
+
+	//判断多余的边是否够用
+	if invalidConnCnt >= (len(setList) + needConnNodeCnt - 1) {
+		return len(setList) + needConnNodeCnt - 1
+	}
+
+	return -1
+}
+
+func findNumInSetV2(num int, setMap map[int]int) int {
+	setNO, ok := setMap[num]
+	if !ok {
+		return -1
+	}
+
+	return setNO
+}
+
+//func MakeConnectedV2(n int, connections [][]int) int {
+//	setMap := make(map[int]int)
+//	setConnMap := make(map[int]int)
+//
+//	//遍历找到所有的互联小集合,同时找出多余线
+//	invalidConnCnt := 0
+//	setNO := 1
+//	for _, connection := range connections {
+//		p1 := findNumInSetV2(connection[0], setMap)
+//		p2 := findNumInSetV2(connection[1], setMap)
+//
+//		if p1 == -1 && p2 == -1 {
+//			setMap[connection[0]] = setNO
+//			setMap[connection[1]] = setNO
+//			setNO++
+//			continue
+//		}
+//
+//		if p1 == -1 {
+//			setMap[connection[0]] = p2
+//			continue
+//		}
+//
+//		if p2 == -1 {
+//			setMap[connection[1]] = p1
+//			continue
+//		}
+//
+//		//若p1 ！= p2,通过setConnMap存储两个集合互通这个关系
+//		if p1 != p2 {
+//			if p1 < p2 {
+//				if _,ok := setConnMap[p2]
+//				setConnMap[p2] = p1
+//			} else {
+//				setConnMap[p1] = p2
+//			}
+//			continue
+//		}
+//
+//		//说明两端其实都在集合里，本来就是互通的，这条边是多余的
+//		invalidConnCnt++
+//	}
+//
+//	//遍历setMap
+//	needConnNodeCnt := 0
+//	realSetMap := make(map[int]bool)
+//	for i := 0; i < n; i++ {
+//		setInd := findNumInSetV2(i, setMap)
+//		if setInd == -1 {
+//			needConnNodeCnt++
+//			continue
+//		}
+//
+//		for {
+//			data, ok := setConnMap[setInd]
+//			if !ok {
+//				break
+//			}
+//			setInd = data
+//		}
+//
+//		realSetMap[setInd] = true
+//	}
+//
+//	if len(realSetMap) == 1 && needConnNodeCnt == 0 {
+//		return 0
+//	}
+//
+//	//判断多余的边是否够用
+//	if invalidConnCnt >= (len(realSetMap) + needConnNodeCnt - 1) {
+//		return len(realSetMap) + needConnNodeCnt - 1
+//	}
+//
+//	return -1
+//}
