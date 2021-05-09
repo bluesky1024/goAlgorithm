@@ -870,3 +870,135 @@ func IntToRoman(num int) string {
 
 	return res
 }
+
+/*问题*/
+/*
+假设有从 1 到 N 的 N 个整数，如果从这 N 个数字中成功构造出一个数组，使得数组的第 i 位 (1 <= i <= N) 满足如下两个条件中的一个，我们就称这个数组为一个优美的排列。条件：
+
+第 i 位的数字能被 i 整除
+i 能被第 i 位上的数字整除
+现在给定一个整数 N，请问可以构造多少个优美的排列？
+
+示例1:
+
+输入: 2
+输出: 2
+解释:
+
+第 1 个优美的排列是 [1, 2]:
+  第 1 个位置（i=1）上的数字是1，1能被 i（i=1）整除
+  第 2 个位置（i=2）上的数字是2，2能被 i（i=2）整除
+
+第 2 个优美的排列是 [2, 1]:
+  第 1 个位置（i=1）上的数字是2，2能被 i（i=1）整除
+  第 2 个位置（i=2）上的数字是1，i（i=2）能被 1 整除
+说明:
+
+N 是一个正整数，并且不会超过15。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/beautiful-arrangement
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+*/
+/*思路*/
+/*
+n[i] % i == 0 || i % n[i] == 0
+1
+1
+2
+1 2；2 1
+3
+1 2 3；3 2 1
+
+写了几个可以看出，最好的方法，采用动态规划
+求出s[n-1] 再求 s[n] 能在s[n-1]基础上怎么安排num[n]
+
+直接计算cnt比较难递推，还是需要把可能的组合全部列出来
+
+上述想的太简单了，以为s[n]相较s[n-1]只是调整了两个数的位置，其实可能有3个或以上的数据调整位置
+
+最后用了暴力方法，从1到n遍历，逐个推入备选答案中，使用预设条件进行剪枝，错误答案也保留吧，TODO 想想怎么把错误方法改造正确
+*/
+
+func CountArrangementWrong(n int) int {
+	// 在n-1基础上，n这个数可以存放的位置来自于它的约数
+	// n这个数的约数所在位置的数与n互换，首先n到约数位置肯定是没问题的，但约数到n的位置不一定可行，怎么过滤？？？
+	// 另外因为在1-n中n肯定是最大值，所以也不需要考虑它的倍数的情况）
+	res := queryArrangement(n)
+	return len(res)
+}
+
+func queryArrangement(n int) [][]int {
+	if n == 1 {
+		return [][]int{{1}}
+	}
+
+	res := [][]int{{1}}
+	for i := 2; i <= n; i++ {
+		divisors := getDivisors(i)
+		tempRes := make([][]int, 0)
+		for _, divisor := range divisors {
+			if divisor == i {
+				for _, l := range res {
+					temp := make([]int, i)
+					copy(temp, l)
+					temp[i-1] = i
+					tempRes = append(tempRes, temp)
+				}
+				continue
+			}
+			for _, l := range res {
+				if i%l[divisor-1] == 0 {
+					temp := make([]int, i)
+					copy(temp, l)
+					temp[i-1] = temp[divisor-1]
+					temp[divisor-1] = i
+					tempRes = append(tempRes, temp)
+				}
+			}
+		}
+
+		res = tempRes
+	}
+	return res
+}
+
+func getDivisors(n int) []int {
+	res := make([]int, 0)
+	for i := 1; i <= n; i++ {
+		if n%i == 0 {
+			res = append(res, i)
+		}
+	}
+	return res
+}
+
+func CountArrangement(N int) int {
+	res := 0
+
+	var checkArrangeMent func(cur []int, usedMap map[int]struct{})
+	checkArrangeMent = func(cur []int, usedMap map[int]struct{}) {
+		if len(cur) == N {
+			res++
+			return
+		}
+		pos := len(cur) + 1
+		for i := 1; i <= N; i++ {
+			if _, ok := usedMap[i]; ok {
+				continue
+			}
+			if i%pos == 0 || pos%i == 0 {
+				cur = append(cur, i)
+				usedMap[i] = struct{}{}
+				checkArrangeMent(cur, usedMap)
+				delete(usedMap, i)
+				cur = cur[:len(cur)-1]
+			}
+		}
+	}
+
+	checkArrangeMent([]int{}, make(map[int]struct{}))
+
+	return res
+}

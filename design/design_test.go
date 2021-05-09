@@ -142,3 +142,15 @@ func TestIntToRoman(t *testing.T) {
 	assert.Equal(t, IntToRoman(58), "LVIII")
 	assert.Equal(t, IntToRoman(1994), "MCMXCIV")
 }
+
+func TestCountArrangement(t *testing.T) {
+	assert.Equal(t, CountArrangement(2), 2)
+	assert.Equal(t, CountArrangement(3), 3)
+	assert.Equal(t, CountArrangement(4), 8)
+	assert.Equal(t, CountArrangement(5), 10)
+	assert.Equal(t, CountArrangement(6), 36)
+}
+
+func TestGetDivisors(t *testing.T) {
+	t.Log(getDivisors(6))
+}
