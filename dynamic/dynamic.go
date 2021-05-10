@@ -600,3 +600,110 @@ func MaxProfit(prices []int) int {
 
 	return curMax
 }
+
+/*
+问题
+*/
+/*
+给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+以上是柱状图的示例，其中每个柱子的宽度为 1，给定的高度为 [2,1,5,6,2,3]。
+
+图中阴影部分为所能勾勒出的最大矩形面积，其面积为 10 个单位。
+
+
+
+示例:
+
+输入: [2,1,5,6,2,3]
+输出: 10
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/largest-rectangle-in-histogram
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*
+思路
+*/
+/*
+考虑以当前矩形为高，向左向右计算可行的最长宽度
+原遍历方式过于简单，导致时间复杂度过高
+官方答案中采用了 单调栈 来提高性能，以下直接抄写了官方代码
+*/
+
+func LargestRectangleArea(heights []int) int {
+	curMax := 0
+	for ind, h := range heights {
+		left := ind
+		for {
+			if left == 0 {
+				break
+			}
+			if heights[left-1] >= h {
+				left--
+				continue
+			}
+			break
+		}
+		right := ind
+		for {
+			if right == len(heights)-1 {
+				break
+			}
+			if heights[right+1] >= h {
+				right++
+				continue
+			}
+			break
+		}
+		length := right - left + 1
+		if h*length > curMax {
+			curMax = h * length
+		}
+	}
+	return curMax
+}
+
+// 官方答案
+func LargestRectangleAreaFormal(heights []int) int {
+	max := func(x, y int) int {
+		if x > y {
+			return x
+		}
+		return y
+	}
+
+	n := len(heights)
+	left, right := make([]int, n), make([]int, n)
+	monoStack := make([]int, 0)
+	for i := 0; i < n; i++ {
+		for len(monoStack) > 0 && heights[monoStack[len(monoStack)-1]] >= heights[i] {
+			monoStack = monoStack[:len(monoStack)-1]
+		}
+		if len(monoStack) == 0 {
+			left[i] = -1
+		} else {
+			left[i] = monoStack[len(monoStack)-1]
+		}
+		monoStack = append(monoStack, i)
+	}
+	monoStack = make([]int, 0)
+	for i := n - 1; i >= 0; i-- {
+		for len(monoStack) > 0 && heights[monoStack[len(monoStack)-1]] >= heights[i] {
+			monoStack = monoStack[:len(monoStack)-1]
+		}
+		if len(monoStack) == 0 {
+			right[i] = n
+		} else {
+			right[i] = monoStack[len(monoStack)-1]
+		}
+		monoStack = append(monoStack, i)
+	}
+	ans := 0
+	for i := 0; i < n; i++ {
+		ans = max(ans, (right[i]-left[i]-1)*heights[i])
+	}
+	return ans
+}

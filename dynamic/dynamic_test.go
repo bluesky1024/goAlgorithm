@@ -2,6 +2,7 @@ package dynamic
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -64,4 +65,12 @@ func TestMaxProfit(t *testing.T) {
 	fmt.Println(MaxProfit([]int{7, 6, 5, 4, 3, 2, 1}))
 
 	fmt.Println(MaxProfit([]int{2, 1, 4}))
+}
+
+func TestLargestRectangleArea(t *testing.T) {
+	assert.Equal(t, LargestRectangleArea([]int{2, 1, 5, 6, 2, 3}), 10)
+	assert.Equal(t, LargestRectangleArea([]int{2, 1, 2}), 3)
+
+	assert.Equal(t, LargestRectangleAreaFormal([]int{2, 1, 5, 6, 2, 3}), 10)
+	assert.Equal(t, LargestRectangleAreaFormal([]int{2, 1, 2}), 3)
 }
