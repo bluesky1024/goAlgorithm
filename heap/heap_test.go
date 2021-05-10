@@ -2,6 +2,7 @@ package heap
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -18,4 +19,12 @@ func TestKthLargest_Add(t *testing.T) {
 	fmt.Println(kthLargest.Add(13))
 	fmt.Println(kthLargest.Add(19))
 	fmt.Println(kthLargest.Add(22))
+}
+
+func Test_checkBrackets(t *testing.T) {
+	assert.Equal(t, checkBrackets("{{{}()}}"), true)
+	assert.Equal(t, checkBrackets("{([]{})}"), false)
+	assert.Equal(t, checkBrackets("{([]{})}"), false)
+	assert.Equal(t, checkBrackets("{}{}[()]"), true)
+	assert.Equal(t, checkBrackets("{([)]} "), false)
 }

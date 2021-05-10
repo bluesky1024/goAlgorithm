@@ -1,5 +1,7 @@
 package heap
 
+import "fmt"
+
 /*
 基础：
 顺序存储的完全二叉树可以用数组表示
@@ -120,4 +122,65 @@ func (h *KthLargest) Add(v int) int {
 	adjustNode(h.kHeap, 0)
 
 	return h.kHeap[0]
+}
+
+/*问题*/
+/*
+判断括号的合法性
+[{{}{}}]     true
+({}{}[{}])   true
+{([)]}       false
+
+增加个额外的限制
+括号有包含顺序，只能是 {} 包含 [] 包含 ()
+*/
+/*思路*/
+/*
+通过栈来维护
+*/
+func checkBrackets(s string) bool {
+	unfinishedStack := make([]rune, 0)
+	for _, d := range s {
+		if len(unfinishedStack) == 0 {
+			if d == '{' || d == '[' || d == '(' {
+				unfinishedStack = append(unfinishedStack, d)
+				continue
+			}
+			return false
+		}
+
+		switch d {
+		case '{':
+			if unfinishedStack[len(unfinishedStack)-1] == '[' || unfinishedStack[len(unfinishedStack)-1] == '(' {
+				return false
+			}
+			unfinishedStack = append(unfinishedStack, d)
+		case '[':
+			if unfinishedStack[len(unfinishedStack)-1] == '(' {
+				return false
+			}
+			unfinishedStack = append(unfinishedStack, d)
+		case '(':
+			unfinishedStack = append(unfinishedStack, d)
+		case '}':
+			if unfinishedStack[len(unfinishedStack)-1] != '{' {
+				return false
+			}
+			unfinishedStack = unfinishedStack[:len(unfinishedStack)-1]
+		case ']':
+			if unfinishedStack[len(unfinishedStack)-1] != '[' {
+				return false
+			}
+			unfinishedStack = unfinishedStack[:len(unfinishedStack)-1]
+		case ')':
+			if unfinishedStack[len(unfinishedStack)-1] != '(' {
+				return false
+			}
+			unfinishedStack = unfinishedStack[:len(unfinishedStack)-1]
+		default:
+			fmt.Printf("invalid character:%v\n", d)
+			return false
+		}
+	}
+	return len(unfinishedStack) == 0
 }
