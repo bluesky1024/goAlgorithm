@@ -154,3 +154,10 @@ func TestCountArrangement(t *testing.T) {
 func TestGetDivisors(t *testing.T) {
 	t.Log(getDivisors(6))
 }
+
+func TestRomanToInt(t *testing.T) {
+	assert.Equal(t, RomanToInt("III"), 3)
+	assert.Equal(t, RomanToInt("IV"), 4)
+	assert.Equal(t, RomanToInt("LVIII"), 58)
+	assert.Equal(t, RomanToInt("MCMXCIV"), 1994)
+}
