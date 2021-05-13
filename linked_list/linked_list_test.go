@@ -2,6 +2,7 @@ package linked_list
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -188,4 +189,21 @@ func TestMergeTwoList(t *testing.T) {
 
 	d := MergeKLists([]*ListNode{a, b, c})
 	d.Prinf()
+}
+
+func TestLink(t *testing.T) {
+	mLink := NewLinkNode([]int{1, 2, 3, 4, 5, 6})
+	assert.Equal(t, mLink.PrintAndOutput(), []int{1, 2, 3, 4, 5, 6})
+	mLink.Del(1)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{2, 3, 4, 5, 6})
+	mLink.Del(4)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{2, 3, 5, 6})
+
+	mLink.Insert(0, 10)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{10, 2, 3, 5, 6})
+	mLink.Insert(2, 20)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{10, 2, 20, 3, 5, 6})
+
+	mLink.Reverse()
+	assert.Equal(t, mLink.PrintAndOutput(), []int{6, 5, 3, 20, 2, 10})
 }

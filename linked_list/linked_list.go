@@ -501,3 +501,114 @@ func MergeKLists(lists []*ListNode) *ListNode {
 
 	return l1
 }
+
+// Link 链表实现
+type Link struct {
+	root *linkNode
+}
+
+// linkNode 链表节点
+type linkNode struct {
+	data int
+	next *linkNode
+}
+
+func NewLinkNode(nums []int) *Link {
+	if len(nums) == 0 {
+		return nil
+	}
+	root := &linkNode{
+		data: nums[0],
+		next: nil,
+	}
+	cur := root
+	for i := 1; i < len(nums); i++ {
+		cur.next = &linkNode{
+			data: nums[i],
+			next: nil,
+		}
+		cur = cur.next
+	}
+	return &Link{root: root}
+}
+
+// Print 按顺序打印元素值并输出
+func (l *Link) PrintAndOutput() []int {
+	res := make([]int, 0)
+	cur := l.root
+	for {
+		if cur == nil {
+			break
+		}
+		res = append(res, cur.data)
+		cur = cur.next
+	}
+	fmt.Println(res)
+	return res
+}
+
+// Del 删除特定数据
+func (l *Link) Del(t int) {
+	cur := l.root
+	var pre *linkNode
+	for {
+		if cur == nil {
+			break
+		}
+		if cur.data == t {
+			if pre == nil {
+				l.root = cur.next
+				return
+			}
+			pre.next = cur.next
+			return
+		}
+		pre = cur
+		cur = cur.next
+	}
+}
+
+// Insert 在指定pos插入数据t，pos从0开始
+func (l *Link) Insert(pos int, t int) {
+	curPos := 0
+	cur := l.root
+	var pre *linkNode
+	for {
+		if cur == nil {
+			break
+		}
+		if curPos == pos {
+			if pre == nil {
+				l.root = &linkNode{
+					data: t,
+					next: cur,
+				}
+				return
+			}
+			pre.next = &linkNode{
+				data: t,
+				next: cur,
+			}
+			return
+		}
+		pre = cur
+		cur = cur.next
+		curPos++
+	}
+}
+
+// Reverse 反转
+func (l *Link) Reverse() {
+	cur := l.root
+	var pre *linkNode
+	for {
+		if cur == nil {
+			break
+		}
+		temp := cur.next
+		cur.next = pre
+		pre = cur
+		cur = temp
+	}
+	l.root = pre
+}
