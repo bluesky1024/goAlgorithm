@@ -612,3 +612,54 @@ func (l *Link) Reverse() {
 	}
 	l.root = pre
 }
+
+// ReverseEveryThree 每隔n个反转一次
+// 例：n=3,[1,2,3,4,5,6,7,8] => [3,2,1,6,5,4,8,7]
+// 首先构造正常的全量反转，并引入遍历计数
+// 当计数为3时 cur-3 pre-2 temp-4
+func (l *Link) ReverseEveryN(n int) {
+	if n <= 1 {
+		return
+	}
+	curCnt := 0
+	cur := l.root
+	l.root = nil
+	var pre *linkNode
+
+	lastEndList := []*linkNode{}
+	lastEnd := cur
+	for {
+		curCnt++
+		if cur == nil {
+			break
+		}
+		temp := cur.next
+		cur.next = pre
+		pre = cur
+
+		if curCnt == 1 {
+			lastEndList = append(lastEndList, cur)
+			lastEnd = cur
+		}
+
+		if curCnt == n {
+			if l.root == nil {
+				l.root = cur
+			} else {
+				lastEnd = lastEndList[0]
+				lastEndList = lastEndList[1:]
+				lastEnd.next = cur
+			}
+			pre = nil
+			curCnt = 0
+		}
+
+		cur = temp
+	}
+
+	if l.root != nil {
+		lastEndList[0].next = pre
+	} else {
+		l.root = pre
+	}
+}

@@ -207,3 +207,25 @@ func TestLink(t *testing.T) {
 	mLink.Reverse()
 	assert.Equal(t, mLink.PrintAndOutput(), []int{6, 5, 3, 20, 2, 10})
 }
+
+func TestLink_ReverseEveryN(t *testing.T) {
+	mLink := NewLinkNode([]int{1, 2, 3, 4, 5, 6, 7, 8})
+	mLink.ReverseEveryN(1)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{1, 2, 3, 4, 5, 6, 7, 8})
+
+	mLink = NewLinkNode([]int{1, 2, 3, 4, 5, 6, 7, 8})
+	mLink.ReverseEveryN(2)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{2, 1, 4, 3, 6, 5, 8, 7})
+
+	mLink = NewLinkNode([]int{1, 2, 3, 4, 5, 6, 7, 8})
+	mLink.ReverseEveryN(3)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{3, 2, 1, 6, 5, 4, 8, 7})
+
+	mLink = NewLinkNode([]int{1, 2, 3, 4, 5, 6, 7, 8})
+	mLink.ReverseEveryN(4)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{4, 3, 2, 1, 8, 7, 6, 5})
+
+	mLink = NewLinkNode([]int{1, 2, 3})
+	mLink.ReverseEveryN(4)
+	assert.Equal(t, mLink.PrintAndOutput(), []int{3, 2, 1})
+}
