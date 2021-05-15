@@ -3110,3 +3110,29 @@ func TestMaxIncreaseKeepingSkyline(t *testing.T) {
 		[]int{0, 3, 1, 0},
 	}), 35)
 }
+
+func Test_nextPermutation(t *testing.T) {
+	nums := []int{5, 4, 7, 5, 3, 2}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{5, 5, 2, 3, 4, 7})
+
+	//nums := []int{1, 2, 3}
+	//nextPermutation(nums)
+	//assert.Equal(t, nums, []int{1, 3, 2})
+	//
+	//nums = []int{3, 2, 1}
+	//nextPermutation(nums)
+	//assert.Equal(t, nums, []int{1, 2, 3})
+	//
+	//nums = []int{1, 3, 2}
+	//nextPermutation(nums)
+	//assert.Equal(t, nums, []int{2, 1, 3})
+	//
+	//nums = []int{1, 1, 5}
+	//nextPermutation(nums)
+	//assert.Equal(t, nums, []int{1, 5, 1})
+	//
+	//nums = []int{1}
+	//nextPermutation(nums)
+	//assert.Equal(t, nums, []int{1})
+}
