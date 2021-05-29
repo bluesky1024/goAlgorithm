@@ -3116,23 +3116,35 @@ func Test_nextPermutation(t *testing.T) {
 	nextPermutation(nums)
 	assert.Equal(t, nums, []int{5, 5, 2, 3, 4, 7})
 
-	//nums := []int{1, 2, 3}
-	//nextPermutation(nums)
-	//assert.Equal(t, nums, []int{1, 3, 2})
-	//
-	//nums = []int{3, 2, 1}
-	//nextPermutation(nums)
-	//assert.Equal(t, nums, []int{1, 2, 3})
-	//
-	//nums = []int{1, 3, 2}
-	//nextPermutation(nums)
-	//assert.Equal(t, nums, []int{2, 1, 3})
-	//
-	//nums = []int{1, 1, 5}
-	//nextPermutation(nums)
-	//assert.Equal(t, nums, []int{1, 5, 1})
-	//
-	//nums = []int{1}
-	//nextPermutation(nums)
-	//assert.Equal(t, nums, []int{1})
+	nums = []int{1, 2, 3}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{1, 3, 2})
+
+	nums = []int{3, 2, 1}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{1, 2, 3})
+
+	nums = []int{1, 3, 2}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{2, 1, 3})
+
+	nums = []int{1, 1, 5}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{1, 5, 1})
+
+	nums = []int{1}
+	nextPermutation(nums)
+	assert.Equal(t, nums, []int{1})
+}
+
+func Test_merge(t *testing.T) {
+	assert.Equal(t, merge([][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}}),
+		[][]int{{1, 6}, {8, 10}, {15, 18}})
+
+	assert.Equal(t, merge([][]int{{1, 4}, {4, 5}}), [][]int{{1, 5}})
+}
+
+func Test_mergeSingle(t *testing.T) {
+	assert.Equal(t, mergeSingle([][]int{{1, 3}, {5, 8}}, []int{2, 4}), [][]int{{1, 4}, {5, 8}})
+	assert.Equal(t, mergeSingle([][]int{}, []int{2, 4}), [][]int{{2, 4}})
 }

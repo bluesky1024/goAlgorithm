@@ -77,3 +77,10 @@ func TestLetterCombinations(t *testing.T) {
 func TestOptimalDivision(t *testing.T) {
 	assert.Equal(t, OptimalDivision([]int{1000, 100, 10, 2}), "1000/(100/10/2)")
 }
+
+func Test_longestPalindrome(t *testing.T) {
+	assert.Equal(t, longestPalindrome("babad"), "bab")
+	assert.Equal(t, longestPalindrome("cbbd"), "bb")
+	assert.Equal(t, longestPalindrome("a"), "a")
+	assert.Equal(t, longestPalindrome("aaaa"), "aaaa")
+}

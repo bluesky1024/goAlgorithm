@@ -1398,3 +1398,114 @@ func nextPermutation(nums []int) {
 		nums[i], nums[len(nums)-1-i] = nums[len(nums)-1-i], nums[i]
 	}
 }
+
+/*问题*/
+/*
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+
+
+
+示例 1：
+
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+示例 2：
+
+输入：intervals = [[1,4],[4,5]]
+输出：[[1,5]]
+解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+
+
+提示：
+
+1 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 104
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/merge-intervals
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+什么情况下会需要合并？
+a区间的enda 大于b区间的startb
+合并后的区间为 min(starta,startb) - max(enda,endb)
+*/
+
+type itv struct {
+	data [][]int
+}
+
+func (i *itv) Len() int {
+	return len(i.data)
+}
+func (i *itv) Less(ii, jj int) bool {
+	return i.data[ii][0] < i.data[jj][0]
+}
+func (i *itv) Swap(ii, jj int) {
+	i.data[ii], i.data[jj] = i.data[jj], i.data[ii]
+}
+
+func merge(intervals [][]int) [][]int {
+	// 对 intervals 进行排序
+	itvData := &itv{
+		data: intervals,
+	}
+
+	oriSort.Sort(itvData)
+
+	res := make([][]int, 0)
+	for _, interval := range intervals {
+		res = mergeSingle(res, interval)
+	}
+
+	return res
+}
+
+func mergeSingle(resIntervals [][]int, interval []int) [][]int {
+	temp := interval
+	getMin := func(a int, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+	getMax := func(a int, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	res := make([][]int, 0)
+	insert := false
+	curInd := 0
+	for {
+		if curInd >= len(resIntervals) {
+			break
+		}
+		for ind := curInd; ind < len(resIntervals); ind++ {
+			itv := resIntervals[ind]
+			// 有重合
+			if interval[0] >= itv[0] && interval[0] <= itv[1] {
+				res = append(res, []int{getMin(itv[0], interval[0]), getMax(itv[1], interval[1])})
+				curInd = ind
+				interval = res[len(res)-1]
+				insert = true
+				break
+			} else {
+				res = append(res, itv)
+			}
+			curInd = ind
+		}
+		curInd++
+	}
+
+	if !insert {
+		res = append(res, temp)
+	}
+
+	return res
+}

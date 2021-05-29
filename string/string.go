@@ -835,3 +835,97 @@ func OptimalDivision(nums []int) string {
 	res += ")"
 	return res
 }
+
+/*问题*/
+/*
+给你一个字符串 s，找到 s 中最长的回文子串。
+
+
+
+示例 1：
+
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+示例 2：
+
+输入：s = "cbbd"
+输出："bb"
+示例 3：
+
+输入：s = "a"
+输出："a"
+示例 4：
+
+输入：s = "ac"
+输出："a"
+
+
+提示：
+
+1 <= s.length <= 1000
+s 仅由数字和英文字母（大写和/或小写）组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+回文串，从中间位置，往两边遍历都是一样的
+
+最粗暴的方法，逐个数遍历
+存在几种情况
+a.回文串长度为奇数，当前位置为中点
+b.回文串长度为偶数，ind与ind+1之间为中心
+*/
+func longestPalindrome(s string) string {
+	if len(s) <= 1 {
+		return s
+	}
+	res := ""
+
+	// 奇数
+	for ind := range s {
+		leftPos := ind - 1
+		rightPos := ind + 1
+		tempLength := 1
+		for {
+			if leftPos < 0 || rightPos >= len(s) {
+				break
+			}
+			if s[leftPos] != s[rightPos] {
+				break
+			}
+			tempLength += 2
+			leftPos--
+			rightPos++
+		}
+		if tempLength > len(res) {
+			res = s[leftPos+1 : rightPos]
+		}
+	}
+
+	// 偶数
+	for ind := 0; ind < len(s)-1; ind++ {
+		leftPos := ind
+		rightPos := ind + 1
+		tempLength := 0
+		for {
+			if leftPos < 0 || rightPos >= len(s) {
+				break
+			}
+			if s[leftPos] != s[rightPos] {
+				break
+			}
+			tempLength += 2
+			leftPos--
+			rightPos++
+		}
+		if tempLength > len(res) {
+			res = s[leftPos+1 : rightPos]
+		}
+	}
+
+	return res
+}
