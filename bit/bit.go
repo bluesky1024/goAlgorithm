@@ -182,3 +182,69 @@ func HammingWeight(num uint32) int {
 	//}
 	return res
 }
+
+/*问题*/
+/*
+编写一个函数，不用临时变量，直接交换numbers = [a, b]中a与b的值。
+
+示例：
+
+输入: numbers = [1,2]
+输出: [2,1]
+提示：
+
+numbers.length == 2
+-2147483647 <= numbers[i] <= 2147483647
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/swap-numbers-lcci
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+golang基本语法本来就支持两个数互换
+
+位运算
+y = x^x^y
+
+*/
+func swapNumbers(numbers []int) []int {
+	// solution a
+	// numbers[0], numbers[1] = numbers[1], numbers[0]
+
+	// solution b
+	numbers[0] = numbers[1] ^ numbers[0]
+	numbers[1] = numbers[0] ^ numbers[1]
+	numbers[0] = numbers[0] ^ numbers[1]
+
+	return numbers
+}
+
+/*问题*/
+/*
+不使用运算符 + 和 - ​​​​​​​，计算两整数 ​​​​​​​a 、b ​​​​​​​之和。
+
+示例 1:
+
+输入: a = 1, b = 2
+输出: 3
+示例 2:
+
+输入: a = -2, b = 3
+输出: 1
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sum-of-two-integers
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+res = 无补位数据 + 进位数据
+    =  a^b     + (a&b)<<1
+*/
+func getSum(a int, b int) int {
+	if b == 0 {
+		return a
+	}
+	return getSum(a^b, (a&b)<<1)
+}
