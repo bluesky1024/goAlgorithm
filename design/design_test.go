@@ -161,3 +161,19 @@ func TestRomanToInt(t *testing.T) {
 	assert.Equal(t, RomanToInt("LVIII"), 58)
 	assert.Equal(t, RomanToInt("MCMXCIV"), 1994)
 }
+
+func TestSolution_PickIndex(t *testing.T) {
+	s := Constructor([]int{2, 3, 5})
+	t.Log(s)
+	mapData := map[int]int{
+		0: 0,
+		1: 0,
+		2: 0,
+	}
+	for i := 0; i < 100000; i++ {
+		idx := s.PickIndex()
+		mapData[idx] = mapData[idx] + 1
+	}
+
+	t.Log(mapData)
+}
