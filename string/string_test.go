@@ -84,3 +84,9 @@ func Test_longestPalindrome(t *testing.T) {
 	assert.Equal(t, longestPalindrome("a"), "a")
 	assert.Equal(t, longestPalindrome("aaaa"), "aaaa")
 }
+
+func Test_generateParenthesis(t *testing.T) {
+	assert.Len(t, generateParenthesis(1), 1)
+	assert.Len(t, generateParenthesis(2), 2)
+	assert.Len(t, generateParenthesis(3), 5)
+}
