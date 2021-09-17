@@ -3149,43 +3149,13 @@ func Test_mergeSingle(t *testing.T) {
 	assert.Equal(t, mergeSingle([][]int{}, []int{2, 4}), [][]int{{2, 4}})
 }
 
-func canJumpV1(nums []int) bool {
-	if len(nums) <= 1 {
-		return true
-	}
-
-	// 找到中间的0
-	zeroInd := make([]int, 0)
-	for i := 0; i < len(nums)-1; i++ {
-		if nums[i] == 0 {
-			zeroInd = append(zeroInd, i)
-		}
-	}
-
-	// 逐个0判断是否能走到
-	for i, ind := range zeroInd {
-		startInd := 0
-		if i >= 1 {
-			startInd = zeroInd[i-1] + 1
-		}
-		endInd := ind - 1
-		ok := false
-		for ii := endInd; ii >= startInd; ii-- {
-			if nums[ii]+ii >= ind+1 {
-				ok = true
-				break
-			}
-		}
-		if !ok {
-			return false
-		}
-	}
-
-	return true
-}
-
 func Test_canJump(t *testing.T) {
 	assert.Equal(t, canJump([]int{2, 3, 1, 1, 4}), true)
 	assert.Equal(t, canJump([]int{3, 2, 1, 0, 4}), false)
 	assert.Equal(t, canJump([]int{3, 0, 0, 0}), true)
+}
+
+func Test_findPeakElement(t *testing.T) {
+	assert.Equal(t, findPeakElement([]int{1, 2, 3, 1}), 2)
+	assert.Equal(t, findPeakElement([]int{1, 2}), 1)
 }
