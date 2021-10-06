@@ -707,3 +707,117 @@ func LargestRectangleAreaFormal(heights []int) int {
 	}
 	return ans
 }
+
+/*问题*/
+/*
+给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+
+示例 1:
+
+输入: numRows = 5
+输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+示例 2:
+
+输入: numRows = 1
+输出: [[1]]
+
+
+提示:
+
+1 <= numRows <= 30
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+一层层计算就行了，没啥特点
+*/
+func generate(numRows int) [][]int {
+	if numRows < 1 {
+		return nil
+	}
+	add := func(nums []int, i int) int {
+		if i == 0 {
+			return nums[0]
+		}
+		if i == len(nums) {
+			return nums[len(nums)-1]
+		}
+		return nums[i-1] + nums[i]
+	}
+	res := [][]int{{1}}
+	for i := 2; i <= numRows; i++ {
+		temp := make([]int, i)
+		for j := 0; j < i; j++ {
+			temp[j] = add(res[i-2], j)
+		}
+		res = append(res, temp)
+	}
+	return res
+}
+
+/*问题*/
+/*
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+
+
+示例 1：
+
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+示例 2：
+
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+
+
+提示：
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 400
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/house-robber
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+每一个点处有两个选择，进或者不进，由此产生两个结果
+迭代遍历，得到最终结果
+问题在于过程中能否剪枝？
+剪枝方案1：不可能连续三家都不偷
+dp[i] = max(dp[i-2]+nums[i], dp[i-1])
+*/
+func rob(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	max := func(a, b int) int {
+		if a < b {
+			return b
+		}
+		return a
+	}
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	dp[1] = max(nums[0], nums[1])
+	for i := 2; i < len(nums); i++ {
+		dp[i] = max(dp[i-2]+nums[i], dp[i-1])
+	}
+	return dp[len(nums)-1]
+}
