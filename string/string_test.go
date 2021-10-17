@@ -90,3 +90,14 @@ func Test_generateParenthesis(t *testing.T) {
 	assert.Len(t, generateParenthesis(2), 2)
 	assert.Len(t, generateParenthesis(3), 5)
 }
+
+func Test_countAndSay(t *testing.T) {
+	assert.Equal(t, countAndSaySub("111221"), "312211")
+
+	assert.Equal(t, countAndSay(1), "1")
+	assert.Equal(t, countAndSay(2), "11")
+	assert.Equal(t, countAndSay(3), "21")
+	assert.Equal(t, countAndSay(4), "1211")
+	assert.Equal(t, countAndSay(5), "111221")
+	assert.Equal(t, countAndSay(6), "312211")
+}
