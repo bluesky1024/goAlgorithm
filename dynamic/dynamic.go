@@ -821,3 +821,46 @@ func rob(nums []int) int {
 	}
 	return dp[len(nums)-1]
 }
+
+/*问题*/
+/*
+超级丑数，给定一组质数，返回由这组质数作为质数因子构成的数组从小到大排列的第n个数
+数组第一个数为1
+*/
+/*思路*/
+/*
+维护一个跟primers等长的数组pos，用于记录上一个由res[pos[i]] * primers[i]取得最小值的位置
+*/
+func superUgly(n int, primers []int) int {
+	res := make([]int, n)
+	res[0] = 1
+	pos := make([]int, len(primers))
+	for i := 1; i < n; i++ {
+		curTermChooses := make([]int, 0)
+		for ii, p := range pos {
+			cur := res[p] * primers[ii]
+			if res[i] == 0 {
+				res[i] = cur
+				curTermChooses = []int{ii}
+				continue
+			}
+
+			if cur < res[i] {
+				res[i] = cur
+				curTermChooses = []int{ii}
+				continue
+			}
+
+			// 这一段很关键，用于解决 2*3 = 3*2 的问题，也就是相同数字两种乘法都能同一步走到，这时候两种走法都应该+1
+			if cur == res[i] {
+				curTermChooses = append(curTermChooses, ii)
+				continue
+			}
+		}
+		for _, choose := range curTermChooses {
+			pos[choose] = pos[choose] + 1
+		}
+	}
+
+	return res[n-1]
+}
