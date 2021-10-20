@@ -1057,3 +1057,30 @@ func countAndSay(n int) string {
 
 	return cur
 }
+
+/*问题*/
+/*
+简化路径
+*/
+/*思路*/
+/*
+手动维护一个栈，遍历path元素
+发现.就继续，..就pop，其他的非空元素就push
+*/
+func simplifyPath(path string) string {
+	resPath := make([]string, 0)
+	subPaths := strings.Split(path, "/")
+	for _, subPath := range subPaths {
+		if subPath == "." || subPath == "" {
+			continue
+		}
+
+		if subPath == ".." {
+			resPath = resPath[:len(resPath)-1]
+			continue
+		}
+
+		resPath = append(resPath, subPath)
+	}
+	return "/" + strings.Join(resPath, "/")
+}

@@ -3,6 +3,7 @@ package string
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -100,4 +101,9 @@ func Test_countAndSay(t *testing.T) {
 	assert.Equal(t, countAndSay(4), "1211")
 	assert.Equal(t, countAndSay(5), "111221")
 	assert.Equal(t, countAndSay(6), "312211")
+}
+
+func Test_simplifyPath(t *testing.T) {
+	path := "/a/./b/../../c"
+	t.Log(simplifyPath(path))
 }
