@@ -663,3 +663,110 @@ func (l *Link) ReverseEveryN(n int) {
 		l.root = pre
 	}
 }
+
+/*问题*/
+/*
+
+给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
+
+你应当 保留 两个分区中每个节点的初始相对位置。
+
+
+
+示例 1：
+
+
+输入：head = [1,4,3,2,5,2], x = 3
+输出：[1,2,2,4,3,5]
+示例 2：
+
+输入：head = [2,1], x = 2
+输出：[1,2]
+
+
+提示：
+
+链表中节点的数目在范围 [0, 200] 内
+-100 <= Node.val <= 100
+-200 <= x <= 200
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/partition-list
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+*/
+/*思路*/
+/*
+从前往后找到第一个大于等于x的数，保存其ptr
+继续往后遍历，发现小于x的数就插到ptr前面，同时更新这个ptr的值为当前这个数的ptr
+后续再发现小于x的数，就插入ptr后面
+就是写的太丑陋了。。。
+*/
+
+func NewListNode(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	head := &ListNode{
+		Val: nums[0],
+	}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{
+			Val: nums[i],
+		}
+		cur = cur.Next
+	}
+	return head
+}
+
+func partition(head *ListNode, x int) *ListNode {
+	if head == nil {
+		return nil
+	}
+
+	mvBehind := func(pos *ListNode, oriBefore *ListNode, t *ListNode) *ListNode {
+		oriBefore.Next = t.Next
+		if pos == nil {
+			return t
+		}
+		t.Next = pos.Next
+		pos.Next = t
+		return nil
+	}
+
+	oriHead := head
+	var last *ListNode
+	var insertPoint *ListNode
+	findFirstOver := false
+	for {
+		if head == nil {
+			break
+		}
+		if head.Val >= x {
+			if !findFirstOver {
+				findFirstOver = true
+				insertPoint = last
+			}
+
+			last = head
+			head = head.Next
+		} else {
+			if !findFirstOver {
+				last = head
+				head = head.Next
+			} else {
+				tmp := head.Next
+				node := mvBehind(insertPoint, last, head)
+				insertPoint = head
+				if node != nil {
+					node.Next = oriHead
+					oriHead = node
+				}
+				head = tmp
+			}
+		}
+	}
+
+	return oriHead
+}

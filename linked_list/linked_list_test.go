@@ -229,3 +229,29 @@ func TestLink_ReverseEveryN(t *testing.T) {
 	mLink.ReverseEveryN(4)
 	assert.Equal(t, mLink.PrintAndOutput(), []int{3, 2, 1})
 }
+
+func Test_partition(t *testing.T) {
+	l := NewListNode([]int{1, 4, 3, 0, 2, 5, 2})
+	l.Prinf()
+
+	n := partition(l, 3)
+	n.Prinf()
+
+	l1 := NewListNode([]int{1, 4, 3, 2, 5, 2})
+	l1.Prinf()
+
+	n1 := partition(l1, 3)
+	n1.Prinf()
+
+	l2 := NewListNode([]int{4, 3, 2, 1, 5, 2})
+	l2.Prinf()
+
+	n2 := partition(l2, 3)
+	n2.Prinf()
+
+	l3 := NewListNode([]int{4, 3, 5})
+	l3.Prinf()
+
+	n3 := partition(l3, 3)
+	n3.Prinf()
+}
