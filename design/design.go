@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -1207,4 +1208,127 @@ func (s *Solution) PickIndex() int {
 		}
 	}
 	return mid
+}
+
+/*问题*/
+/*
+运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+
+LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+
+
+进阶：你是否可以在 O(1) 时间复杂度内完成这两种操作？
+
+
+
+示例：
+
+输入
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+输出
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+解释
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // 缓存是 {1=1}
+lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+lRUCache.get(1);    // 返回 1
+lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+lRUCache.get(2);    // 返回 -1 (未找到)
+lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+lRUCache.get(1);    // 返回 -1 (未找到)
+lRUCache.get(3);    // 返回 3
+lRUCache.get(4);    // 返回 4
+
+
+提示：
+
+1 <= capacity <= 3000
+0 <= key <= 10000
+0 <= value <= 105
+最多调用 2 * 105 次 get 和 put
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lru-cache
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+纯粹参考 group cache
+LRU 即最近最少使用
+维护一个有序环形链表，每次get或者put操作，都将这个key对应的元素放到列表的头部；
+然后当put的时候超过了cap时，就从环形列表的尾部删除最后一个元素
+可能需要注意的点，删除元素的时候需要加锁保护
+cap 最大才3000，直接初始化map的时候就提供这么大也无所谓
+*/
+type lruNode struct {
+	key int
+	val int
+	ele *list.Element
+}
+
+type LRUCache struct {
+	cap    int
+	data   map[int]*lruNode
+	orderL *list.List
+	mutex  sync.RWMutex
+}
+
+func ConstructorLRUCache(capacity int) LRUCache {
+	return LRUCache{
+		data:   make(map[int]*lruNode, capacity),
+		orderL: list.New(),
+		cap:    capacity,
+		mutex:  sync.RWMutex{},
+	}
+}
+
+func (l *LRUCache) Get(key int) int {
+	if node, ok := l.data[key]; ok {
+		l.orderL.MoveToFront(node.ele)
+		return node.val
+	}
+	return -1
+}
+
+func (l *LRUCache) Put(key int, value int) {
+	// 查询key在存储中是否存在
+	if node, ok := l.data[key]; ok {
+		l.orderL.MoveToFront(node.ele)
+		node.val = value
+		return
+	}
+
+	// 不存在
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+
+	// cap 满了，先删除再插入
+	if len(l.data) == l.cap {
+		l.delBackEle()
+	}
+
+	// 插入新的key
+	node := &lruNode{
+		key: key,
+		val: value,
+	}
+	node.ele = l.orderL.PushFront(node)
+	l.data[key] = node
+	return
+}
+
+func (l *LRUCache) delBackEle() {
+	back := l.orderL.Back()
+	if back == nil {
+		return
+	}
+	node := back.Value.(*lruNode)
+	delete(l.data, node.key)
+	l.orderL.Remove(back)
 }

@@ -177,3 +177,16 @@ func TestSolution_PickIndex(t *testing.T) {
 
 	t.Log(mapData)
 }
+
+func TestLRUCache(t *testing.T) {
+	c := ConstructorLRUCache(3)
+	c.Put(1, 1)
+	c.Put(2, 2)
+	c.Put(3, 3)
+	assert.Equal(t, c.Get(1), 1)
+	assert.Equal(t, c.Get(2), 2)
+	assert.Equal(t, c.Get(3), 3)
+	c.Put(4, 4)
+	assert.Equal(t, c.Get(4), 4)
+	assert.Equal(t, c.Get(1), -1)
+}
