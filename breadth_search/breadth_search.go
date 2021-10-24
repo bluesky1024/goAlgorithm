@@ -585,87 +585,138 @@ func MakeConnected(n int, connections [][]int) int {
 	return -1
 }
 
-func findNumInSetV2(num int, setMap map[int]int) int {
-	setNO, ok := setMap[num]
-	if !ok {
-		return -1
-	}
+/*问题*/
+/*
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
 
-	return setNO
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+
+
+示例 1：
+A B C E
+S F C S
+A D E E
+
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+
+示例 3：
+
+A B C E
+S F C S
+A D E E
+
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
+输出：false
+
+提示：
+
+m == board.length
+n = board[i].length
+1 <= m, n <= 6
+1 <= word.length <= 15
+board 和 word 仅由大小写英文字母组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-search
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+第一步搜索起始位置，找到可能的出发点
+第二步广度优先遍历
+*/
+// 提取下一步的四个方位的选值，去除无效pos
+func counstructNextPos(board [][]byte, r, c int) [][]int {
+	res := make([][]int, 0)
+	m := len(board)
+	n := len(board[0])
+	if r-1 >= 0 {
+		res = append(res, []int{r - 1, c})
+	}
+	if r+1 < m {
+		res = append(res, []int{r + 1, c})
+	}
+	if c-1 >= 0 {
+		res = append(res, []int{r, c - 1})
+	}
+	if c+1 < n {
+		res = append(res, []int{r, c + 1})
+	}
+	return res
 }
 
-//func MakeConnectedV2(n int, connections [][]int) int {
-//	setMap := make(map[int]int)
-//	setConnMap := make(map[int]int)
-//
-//	//遍历找到所有的互联小集合,同时找出多余线
-//	invalidConnCnt := 0
-//	setNO := 1
-//	for _, connection := range connections {
-//		p1 := findNumInSetV2(connection[0], setMap)
-//		p2 := findNumInSetV2(connection[1], setMap)
-//
-//		if p1 == -1 && p2 == -1 {
-//			setMap[connection[0]] = setNO
-//			setMap[connection[1]] = setNO
-//			setNO++
-//			continue
-//		}
-//
-//		if p1 == -1 {
-//			setMap[connection[0]] = p2
-//			continue
-//		}
-//
-//		if p2 == -1 {
-//			setMap[connection[1]] = p1
-//			continue
-//		}
-//
-//		//若p1 ！= p2,通过setConnMap存储两个集合互通这个关系
-//		if p1 != p2 {
-//			if p1 < p2 {
-//				if _,ok := setConnMap[p2]
-//				setConnMap[p2] = p1
-//			} else {
-//				setConnMap[p1] = p2
-//			}
-//			continue
-//		}
-//
-//		//说明两端其实都在集合里，本来就是互通的，这条边是多余的
-//		invalidConnCnt++
-//	}
-//
-//	//遍历setMap
-//	needConnNodeCnt := 0
-//	realSetMap := make(map[int]bool)
-//	for i := 0; i < n; i++ {
-//		setInd := findNumInSetV2(i, setMap)
-//		if setInd == -1 {
-//			needConnNodeCnt++
-//			continue
-//		}
-//
-//		for {
-//			data, ok := setConnMap[setInd]
-//			if !ok {
-//				break
-//			}
-//			setInd = data
-//		}
-//
-//		realSetMap[setInd] = true
-//	}
-//
-//	if len(realSetMap) == 1 && needConnNodeCnt == 0 {
-//		return 0
-//	}
-//
-//	//判断多余的边是否够用
-//	if invalidConnCnt >= (len(realSetMap) + needConnNodeCnt - 1) {
-//		return len(realSetMap) + needConnNodeCnt - 1
-//	}
-//
-//	return -1
-//}
+// 给出下一步可选范围
+func checkDirect(board [][]byte, curState [][]bool, r, c int, target byte) [][]int {
+	res := make([][]int, 0)
+	possibleNexts := counstructNextPos(board, r, c)
+	for _, possibleNext := range possibleNexts {
+		if curState[possibleNext[0]][possibleNext[1]] ||
+			board[possibleNext[0]][possibleNext[1]] != target {
+			continue
+		}
+		res = append(res, possibleNext)
+	}
+
+	return res
+}
+
+func exist(board [][]byte, word string) bool {
+
+	// 题目说了word不为空，就不判空了；找到可能的出发点
+	startChar := word[0]
+	startPosList := make([][]int, 0)
+	for i, r := range board {
+		for j, c := range r {
+			if c == startChar {
+				startPosList = append(startPosList, []int{i, j})
+			}
+		}
+	}
+
+	if len(word) == 1 && len(startPosList) != 0 {
+		return true
+	}
+
+	// 构造走过的路径记录图
+	counstructState := func(m, n, r, c int) [][]bool {
+		res := make([][]bool, m)
+		for i := 0; i < m; i++ {
+			res[i] = make([]bool, n)
+		}
+		res[r][c] = true
+		return res
+	}
+
+	// 逐个出发点判断是否能走到终点
+	for _, startPos := range startPosList {
+		curState := counstructState(len(board), len(board[0]), startPos[0], startPos[1])
+		// 遍历
+		if checkPath(startPos[0], startPos[1], board, curState, word[1:]) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func checkPath(r int, c int, board [][]byte, curState [][]bool, word string) bool {
+	if len(word) == 0 {
+		return true
+	}
+
+	possibleNexts := checkDirect(board, curState, r, c, word[0])
+	if len(possibleNexts) == 0 {
+		return false
+	}
+	for _, possibleNext := range possibleNexts {
+		curState[possibleNext[0]][possibleNext[1]] = true
+		if checkPath(possibleNext[0], possibleNext[1], board, curState, word[1:]) {
+			return true
+		}
+		curState[possibleNext[0]][possibleNext[1]] = false
+	}
+
+	return false
+}
