@@ -3159,3 +3159,10 @@ func Test_findPeakElement(t *testing.T) {
 	assert.Equal(t, findPeakElement([]int{1, 2, 3, 1}), 2)
 	assert.Equal(t, findPeakElement([]int{1, 2}), 1)
 }
+
+func Test_missingNumber(t *testing.T) {
+	assert.Equal(t, missingNumber([]int{3, 0, 1}), 2)
+	assert.Equal(t, missingNumber([]int{0}), 1)
+	assert.Equal(t, missingNumber([]int{0, 1}), 2)
+	assert.Equal(t, missingNumber([]int{9, 6, 4, 2, 3, 5, 7, 0, 1}), 8)
+}
