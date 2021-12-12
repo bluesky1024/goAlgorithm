@@ -1044,7 +1044,7 @@ strs[i] 仅由 '0' 和 '1' 组成
 是否需要先排序？ 应该不需要
 dp[i][cnt[0]][cnt[1]] = max(dp[i-1][cnt[0]][cnt[1]], dp[i][cnt[0]+getCnt0(i)][cnt[1]+getCnt1[i]])
 */
-func findMaxForm1(strs []string, m int, n int) int {
+func findMaxForm(strs []string, m int, n int) int {
 	getCnt := func(str string) (int, int) {
 		cnt0, cnt1 := 0, 0
 		for _, r := range str {
