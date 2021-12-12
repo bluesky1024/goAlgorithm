@@ -2,8 +2,9 @@ package dynamic
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSumRange(t *testing.T) {
@@ -28,7 +29,7 @@ func TestNthUglyNumber(t *testing.T) {
 }
 
 func TestMinimumTotal(t *testing.T) {
-	trangles := [][]int{[]int{2}, []int{3, 4}, []int{6, 5, 7}, []int{4, 1, 8, 3}}
+	trangles := [][]int{{2}, {3, 4}, {6, 5, 7}, {4, 1, 8, 3}}
 	fmt.Println(MinimumTotal(trangles))
 }
 
@@ -76,8 +77,8 @@ func TestLargestRectangleArea(t *testing.T) {
 }
 
 func Test_generate(t *testing.T) {
-	assert.Equal(t, generate(1), [][]int{[]int{1}})
-	assert.Equal(t, generate(3), [][]int{[]int{1}, []int{1, 1}, []int{1, 2, 1}})
+	assert.Equal(t, generate(1), [][]int{{1}})
+	assert.Equal(t, generate(3), [][]int{{1}, {1, 1}, {1, 2, 1}})
 }
 
 func Test_rob(t *testing.T) {
@@ -88,4 +89,9 @@ func Test_rob(t *testing.T) {
 
 func Test_superUgly(t *testing.T) {
 	assert.Equal(t, superUgly(12, []int{2, 7, 13, 19}), 32)
+}
+
+func Test_findMaxForm(t *testing.T) {
+	//assert.Equal(t, findMaxForm([]string{"10", "0", "1"}, 1, 1), 2)
+	assert.Equal(t, findMaxForm([]string{"10", "0001", "111001", "1", "0"}, 5, 3), 4)
 }

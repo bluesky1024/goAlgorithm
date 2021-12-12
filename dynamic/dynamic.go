@@ -45,8 +45,8 @@ func ConstructorNumArray(nums []int) NumArray {
 	return res
 }
 
-func (this *NumArray) SumRange(i int, j int) int {
-	return this.SumInd[j] - this.SumInd[i] + this.Node[i]
+func (a *NumArray) SumRange(i int, j int) int {
+	return a.SumInd[j] - a.SumInd[i] + a.Node[i]
 }
 
 /*问题*/
@@ -424,7 +424,7 @@ N元素集合，假设已经找到最优结果，引入一个新的元素，所�
 */
 
 func TallestBillboard(rods []int) int {
-	if len(rods) < 0 {
+	if len(rods) <= 0 {
 		return 0
 	}
 
@@ -863,4 +863,223 @@ func superUgly(n int, primers []int) int {
 	}
 
 	return res[n-1]
+}
+
+/*问题*/
+/*
+王强今天很开心，公司发给N元的年终奖。王强决定把年终奖用于购物，他把想买的物品分为两类：主件与附件，附件是从属于某个主件的，下表就是一些主件与附件的例子：
+
+主件	附件
+电脑	打印机，扫描仪
+书柜	图书
+书桌	台灯，文具
+工作椅	无
+
+如果要买归类为附件的物品，必须先买该附件所属的主件。每个主件可以有 0 个、 1 个或 2 个附件。附件不再有从属于自己的附件。王强想买的东西很多，为了不超出预算，他把每件物品规定了一个重要度，分为 5 等：用整数 1 ~ 5 表示，第 5 等最重要。他还从因特网上查到了每件物品的价格（都是 10 元的整数倍）。他希望在不超过 N 元（可以等于 N 元）的前提下，使每件物品的价格与重要度的乘积的总和最大。
+    设第 j 件物品的价格为 v[j] ，重要度为 w[j] ，共选中了 k 件物品，编号依次为 j 1 ， j 2 ，……， j k ，则所求的总和为：
+v[j 1 ]*w[j 1 ]+v[j 2 ]*w[j 2 ]+ … +v[j k ]*w[j k ] 。（其中 * 为乘号）
+    请你帮助王强设计一个满足要求的购物单。
+
+
+
+输入描述：
+输入的第 1 行，为两个正整数，用一个空格隔开：N m
+
+（其中 N （ <32000 ）表示总钱数， m （ <60 ）为希望购买物品的个数。）
+
+
+从第 2 行到第 m+1 行，第 j 行给出了编号为 j-1 的物品的基本数据，每行有 3 个非负整数 v p q
+
+
+（其中 v 表示该物品的价格（ v<10000 ）， p 表示该物品的重要度（ 1 ~ 5 ）， q 表示该物品是主件还是附件。如果 q=0 ，表示该物品为主件，如果 q>0 ，表示该物品为附件， q 是所属主件的编号）
+
+
+
+
+输出描述：
+ 输出文件只有一个正整数，为不超过总钱数的物品的价格与重要度乘积的总和的最大值（ <200000 ）。
+示例1
+输入：
+1000 5
+800 2 0
+400 5 1
+300 5 1
+400 3 0
+500 2 0
+输出：
+2200
+*/
+/*思路*/
+/*
+贪心算法可能有用吗？每次寻求最大价值
+还是老实便利
+剪支过程中，如果是从小到大排列，如果小的都买不了，大的也不用尝试了
+附件怎么考虑，如果要买附件，就要考虑主键是否已经购买
+也就是在做附件是否购买的抉择同时，买附件就意味着也买了主件，否则就不买附件
+*/
+
+type commondity struct {
+	v        int
+	p        int8
+	selfInd  int
+	ownerInd int
+	isBuy    bool
+}
+
+func FindMaxValue(commondities []*commondity, leftMoney int) int {
+	// // 价格从小到大排列
+	// sort.Slice(commondities, func(i, j int) bool {
+	// 	if commondities[i].v < commondities[j].v {
+	// 		return true
+	// 	}
+	// 	if commondities[i].v > commondities[j].v {
+	// 		return false
+	// 	}
+	// 	if commondities[i].ownerInd == 0 && commondities[j].ownerInd != 0 {
+	// 		return true
+	// 	}
+	// 	if commondities[j].ownerInd == 0 && commondities[i].ownerInd != 0 {
+	// 		return false
+	// 	}
+	// 	return true
+	// })
+
+	// 每个商品根据ind建立索引
+	commondityMap := make(map[int]*commondity, len(commondities))
+	for _, c := range commondities {
+		commondityMap[c.selfInd] = c
+	}
+
+	return findMaxValue(commondities, leftMoney, 0, commondityMap)
+}
+
+func findMaxValue(commondities []*commondity, leftMoney int, cur int,
+	commcommondityMap map[int]*commondity) int {
+	if len(commondities) == 0 {
+		return cur
+	}
+	if commondities[0].isBuy || commondities[0].v > leftMoney {
+		return findMaxValue(commondities[1:], leftMoney, cur, commcommondityMap)
+	}
+
+	// 主件处理 或 附件对应主件已经购买
+	if commondities[0].ownerInd == 0 || commcommondityMap[commondities[0].ownerInd].isBuy {
+		// choose 1: 买第0个商品
+		commcommondityMap[commondities[0].selfInd].isBuy = true
+		choose1 := findMaxValue(commondities[1:], leftMoney-commondities[0].v,
+			cur+commondities[0].v*int(commondities[0].p), commcommondityMap)
+		commcommondityMap[commondities[0].selfInd].isBuy = false
+
+		// choose 2: 不买第一个商品
+		choose2 := findMaxValue(commondities[1:], leftMoney, cur, commcommondityMap)
+
+		if choose1 >= choose2 {
+			commcommondityMap[commondities[0].selfInd].isBuy = true
+			return choose1
+		}
+		return choose2
+	}
+
+	// 附件处理 且 对应的主件还没买
+	// 钱不够
+	if commcommondityMap[commondities[0].ownerInd].v+commondities[0].v > leftMoney {
+		return findMaxValue(commondities[1:], leftMoney, cur, commcommondityMap)
+	}
+
+	// 主附都买
+	commcommondityMap[commondities[0].selfInd].isBuy = true
+	commcommondityMap[commondities[0].ownerInd].isBuy = true
+	choose1 := findMaxValue(commondities[1:], leftMoney-commondities[0].v-commcommondityMap[commondities[0].ownerInd].v,
+		cur+commondities[0].v*int(commondities[0].p)+commcommondityMap[commondities[0].ownerInd].v*int(commcommondityMap[commondities[0].ownerInd].p),
+		commcommondityMap)
+	commcommondityMap[commondities[0].selfInd].isBuy = false
+	commcommondityMap[commondities[0].ownerInd].isBuy = false
+
+	// 附件不买
+	choose2 := findMaxValue(commondities[1:], leftMoney, cur, commcommondityMap)
+	if choose1 >= choose2 {
+		commcommondityMap[commondities[0].selfInd].isBuy = true
+		return choose1
+	}
+	return choose2
+}
+
+/*问题*/
+/*
+给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
+
+请你找出并返回 strs 的最大子集的长度，该子集中 最多 有 m 个 0 和 n 个 1 。
+
+如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
+
+
+
+示例 1：
+
+输入：strs = ["10", "0001", "111001", "1", "0"], m = 5, n = 3
+输出：4
+解释：最多有 5 个 0 和 3 个 1 的最大子集是 {"10","0001","1","0"} ，因此答案是 4 。
+其他满足题意但较小的子集包括 {"0001","1"} 和 {"10","1","0"} 。{"111001"} 不满足题意，因为它含 4 个 1 ，大于 n 的值 3 。
+示例 2：
+
+输入：strs = ["10", "0", "1"], m = 1, n = 1
+输出：2
+解释：最大的子集是 {"0", "1"} ，所以答案是 2 。
+
+
+提示：
+
+1 <= strs.length <= 600
+1 <= strs[i].length <= 100
+strs[i] 仅由 '0' 和 '1' 组成
+1 <= m, n <= 100
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ones-and-zeroes
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+动态规划---背包问题
+是否需要先排序？ 应该不需要
+dp[i][cnt[0]][cnt[1]] = max(dp[i-1][cnt[0]][cnt[1]], dp[i][cnt[0]+getCnt0(i)][cnt[1]+getCnt1[i]])
+*/
+func findMaxForm1(strs []string, m int, n int) int {
+	getCnt := func(str string) (int, int) {
+		cnt0, cnt1 := 0, 0
+		for _, r := range str {
+			if r == '1' {
+				cnt1++
+			} else {
+				cnt0++
+			}
+		}
+		return cnt0, cnt1
+	}
+
+	// 初始化
+	dp := make([][][]int, len(strs)+1)
+	for i := range dp {
+		dp[i] = make([][]int, m+1)
+		for ii := range dp[i] {
+			dp[i][ii] = make([]int, n+1)
+		}
+	}
+
+	// 从第一个字符开始处理
+	for i, str := range strs {
+		cnt0, cnt1 := getCnt(str)
+		for im := 0; im <= m; im++ {
+			for in := 0; in <= n; in++ {
+				dp[i+1][im][in] = dp[i][im][in]
+				if im >= cnt0 && in >= cnt1 {
+					tmp := dp[i][im-cnt0][in-cnt1] + 1
+					if tmp > dp[i+1][im][in] {
+						dp[i+1][im][in] = tmp
+					}
+				}
+			}
+		}
+	}
+	return dp[len(strs)][m][n]
 }
