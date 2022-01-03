@@ -442,7 +442,6 @@ func ReverseString(s []byte) {
 		}
 		s[i], s[length-i-1] = s[length-i-1], s[i]
 	}
-	return
 }
 
 /*问题*/
@@ -1083,4 +1082,51 @@ func simplifyPath(path string) string {
 		resPath = append(resPath, subPath)
 	}
 	return "/" + strings.Join(resPath, "/")
+}
+
+/*问题*/
+/*
+输入一个整数，将这个整数以字符串的形式逆序输出
+程序不考虑负数的情况，若数字含有0，则逆序形式也含有0，如输入为100，则输出为001
+
+
+数据范围：
+输入描述：
+输入一个int整数
+
+输出描述：
+将这个整数以字符串的形式逆序输出
+
+示例1
+输入：
+1516000
+复制
+输出：
+0006151
+复制
+示例2
+输入：
+0
+复制
+输出：
+0
+复制
+https://www.nowcoder.com/practice/ae809795fca34687a48b172186e3dafe?tpId=37&&tqId=21234&rp=1&ru=/ta/huawei&qru=/ta/huawei/question-ranking
+
+*/
+/*思路*/
+/*
+逆转数字，十进制逐个处理
+*/
+func ReverseNum(num int) string {
+	res := ""
+	for {
+		left := num % 10
+		num = num / 10
+		res += fmt.Sprintf("%d", left)
+		if num == 0 {
+			break
+		}
+	}
+	return res
 }

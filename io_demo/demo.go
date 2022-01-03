@@ -13,17 +13,197 @@ import (
 )
 
 func main() {
+	// IOStr()
+	IOForg()
+
 	// io demo
 	// fixedInput()
+	// return
 	// fullLineInput()
 	// multiLineInput()
+	// mixInput()
+	// return
 
 	// real instance
 	// IOMaxDrinkCnt()
 	// IOUniqAndSortForRand()
 	// IOSixteenToTen()
-	//IOTeacherOpts()
-	IOStatErrorFile()
+	// IOTeacherOpts()
+	// IOStatErrorFile()
+}
+
+func IOStr() {
+	input := bufio.NewScanner(os.Stdin)
+	for {
+		if !input.Scan() || input.Text() == "" {
+			break
+		}
+		strs := strings.Split(input.Text(), " ")
+		newStr := splitStrs(strs[1:])
+		mSort := &sortStr{
+			s: newStr,
+		}
+		sort.Sort(mSort)
+		// 打印结果
+		for _, str := range mSort.s {
+			fmt.Printf("%s ", str)
+		}
+	}
+}
+
+func splitStrs(strs []string) []string {
+	res := make([]string, 0)
+	for _, str := range strs {
+		if len(str) == 8 {
+			res = append(res, str)
+			continue
+		}
+		if len(str) < 8 {
+			res = append(res, str+strings.Repeat("0", 8-len(str)))
+			continue
+		}
+		curInd := 0
+		for {
+			if curInd >= len(str) {
+				break
+			}
+			tmp := make([]rune, 8)
+			if curInd+8 <= len(str) {
+				copy(tmp, []rune(str[curInd:curInd+8]))
+				curInd = curInd + 8
+				res = append(res, string(tmp))
+				continue
+			}
+			for i := 0; i < 8; i++ {
+				tmp[i] = '0'
+			}
+			copy(tmp, []rune(str[curInd:]))
+			res = append(res, string(tmp))
+			curInd = curInd + 8
+		}
+	}
+	return res
+}
+
+type sortStr struct {
+	s []string
+}
+
+func (s *sortStr) Len() int {
+	return len(s.s)
+}
+
+func (s *sortStr) Less(i, j int) bool {
+	for ind := 0; ind < 8; ind++ {
+		if s.s[i][ind] < s.s[j][ind] {
+			return true
+		}
+		if s.s[i][ind] > s.s[j][ind] {
+			return false
+		}
+	}
+	return false
+}
+
+func (s *sortStr) Swap(i, j int) {
+	s.s[i], s.s[j] = s.s[j], s.s[i]
+}
+
+func IOForg() {
+	l := 0
+	s, t, m := 0, 0, 0
+	stones := make(map[int]bool, 0)
+	input := bufio.NewScanner(os.Stdin)
+	for {
+		// 读取l
+		if !input.Scan() || input.Text() == "" {
+			break
+		}
+		l, _ = strconv.Atoi(input.Text())
+		// 读取 s t m
+		if !input.Scan() {
+			break
+		}
+		stms := strings.Split(input.Text(), " ")
+		if len(stms) != 3 {
+			break
+		}
+		s, _ = strconv.Atoi(stms[0])
+		t, _ = strconv.Atoi(stms[1])
+		m, _ = strconv.Atoi(stms[2])
+		// 读取 stones
+		if !input.Scan() {
+			break
+		}
+		stonesStr := strings.Split(input.Text(), " ")
+		if len(stonesStr) != m {
+			break
+		}
+		stones = make(map[int]bool, len(stonesStr))
+		for _, stone := range stonesStr {
+			tmp, _ := strconv.Atoi(stone)
+			stones[tmp] = true
+		}
+
+		// 输出结果
+		fmt.Println(Forg(l, s, t, stones))
+	}
+}
+
+// 动态规划处理
+// l >= 1
+// 某些位置不让走，则这些位置设置为空即可,不考虑从这些点继续往后走
+// steps[i] = min{ steps[i-s], steps[i-s+1], step[i-s+2],... step[i-t] }
+func Forg(l, s, t int, stones map[int]bool) int {
+	steps := make([]int, l+t)
+	for i := range steps {
+		steps[i] = -1
+	}
+	steps[0] = 0
+	for i := 1; i <= l+t-1; i++ {
+		minPos := -1
+		for ii := s; ii <= t; ii++ {
+			lastPos := i - ii
+			// 若 lastPos < 0,说明该位置走不到
+			if lastPos < 0 {
+				continue
+			}
+			// 若 lastPos == 0，说明该位置一步就能到
+			if lastPos == 0 {
+				minPos = 0
+				break
+			}
+			// 若lastPos > 0,且 steps[lastPos] == -1 ，说明该位置永远跳不到
+			if lastPos > 0 && steps[lastPos] == -1 {
+				continue
+			}
+			// 若 lastPos > 0, 则应该是从该位置用一步跳过去
+			if minPos == -1 {
+				minPos = lastPos
+				continue
+			}
+			// 若本轮迭代的 lastPos 的步数更少，则用该轮的
+			if steps[minPos] > steps[lastPos] {
+				minPos = lastPos
+			}
+		}
+		if minPos == -1 {
+			continue
+		}
+		steps[i] = steps[minPos]
+		if _, ok := stones[i]; ok {
+			steps[i] = steps[i] + 1
+		}
+	}
+
+	min := steps[l]
+	for i := l + 1; i < l+t-1; i++ {
+		if min > steps[i] {
+			min = steps[i]
+		}
+	}
+
+	return min
 }
 
 // 固定长度的输入处理
@@ -71,6 +251,23 @@ func multiLineInput() {
 		fmt.Println(len(p1) + len(p2))
 		cnt--
 	}
+}
+
+func mixInput() {
+	cnt := 0
+	fmt.Scanf("%d", &cnt)
+	fmt.Printf("get cnt:%d\n", cnt)
+	input := bufio.NewScanner(os.Stdin)
+	if !input.Scan() {
+		return
+	}
+	line2 := input.Text()
+	fmt.Printf("2nd line:%s\n", line2)
+	if !input.Scan() {
+		return
+	}
+	line3 := input.Text()
+	fmt.Printf("3rd line:%s\n", line3)
 }
 
 func IOMaxDrinkCnt() {

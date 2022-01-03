@@ -2,10 +2,11 @@ package array
 
 import (
 	"fmt"
-	"github.com/bluesky1024/goAlgorithm/sort"
 	"math"
 	oriSort "sort"
 	"strconv"
+
+	"github.com/bluesky1024/goAlgorithm/sort"
 )
 
 /*问题*/
@@ -450,12 +451,12 @@ type MountainArray struct {
 	Arr []int
 }
 
-func (this *MountainArray) get(index int) int {
-	return this.Arr[index]
+func (t *MountainArray) get(index int) int {
+	return t.Arr[index]
 
 }
-func (this *MountainArray) length() int {
-	return len(this.Arr)
+func (t *MountainArray) length() int {
+	return len(t.Arr)
 }
 
 func FindMoutain(mountainArray *MountainArray, left int, right int, leftV int, rightV int) (int, int) {
@@ -565,10 +566,7 @@ func FindInMountainArray(target int, mountainArr *MountainArray) int {
 //判断是否三点共线
 func checkInLine(a []int, b []int, c []int) bool {
 	if a[0] == b[0] {
-		if a[0] == c[0] {
-			return true
-		}
-		return false
+		return a[0] == c[0]
 	}
 	if a[0] == c[0] {
 		return false
@@ -677,10 +675,7 @@ func IsUgly(num int) bool {
 	for num%5 == 0 {
 		num = num / 5
 	}
-	if num == 1 {
-		return true
-	}
-	return false
+	return num == 1
 }
 
 /*问题*/
@@ -808,7 +803,6 @@ func GameOfLifeV1(board [][]int) {
 			board[i][j] = newBoard[i][j]
 		}
 	}
-	return
 }
 
 /*问题*/

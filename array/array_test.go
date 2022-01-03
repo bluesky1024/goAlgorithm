@@ -2,8 +2,9 @@ package array
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFindNearestNum(t *testing.T) {
@@ -12,7 +13,7 @@ func TestFindNearestNum(t *testing.T) {
 }
 
 func TestFlipAndInvertImage(t *testing.T) {
-	nums := [][]int{[]int{1, 1, 0}, []int{1, 0, 1}, []int{0, 0, 0}}
+	nums := [][]int{{1, 1, 0}, {1, 0, 1}, {0, 0, 0}}
 	nums = FlipAndInvertImage(nums)
 	fmt.Println(nums)
 }
@@ -36,7 +37,7 @@ func TestFindInMountainArray(t *testing.T) {
 }
 
 func TestMaxPoints(t *testing.T) {
-	points := [][]int{[]int{1, 1}, []int{1, 1}, []int{2, 3}}
+	points := [][]int{{1, 1}, {1, 1}, {2, 3}}
 	//points := [][]int{[]int{1, 1}, []int{3, 2}, []int{5, 3}, []int{4, 1}, []int{2, 3}, []int{1, 4}}
 	fmt.Println(MaxPoints(points))
 }
@@ -46,7 +47,7 @@ func TestIsUgly(t *testing.T) {
 }
 
 func TestGameOfLifeV1(t *testing.T) {
-	nums := [][]int{[]int{0, 1, 0, 0, 1, 1, 0}, []int{1, 1, 1, 1, 1, 1, 1}, []int{1, 1, 0, 0, 0, 0, 1}, []int{1, 1, 0, 0, 1, 0, 0}}
+	nums := [][]int{{0, 1, 0, 0, 1, 1, 0}, {1, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 0, 0, 1}, {1, 1, 0, 0, 1, 0, 0}}
 	GameOfLifeV1(nums)
 	fmt.Println(nums)
 }
@@ -3104,10 +3105,10 @@ func TestMaxDistToClosest(t *testing.T) {
 
 func TestMaxIncreaseKeepingSkyline(t *testing.T) {
 	assert.Equal(t, MaxIncreaseKeepingSkyline([][]int{
-		[]int{3, 0, 8, 4},
-		[]int{2, 4, 5, 7},
-		[]int{9, 2, 6, 3},
-		[]int{0, 3, 1, 0},
+		{3, 0, 8, 4},
+		{2, 4, 5, 7},
+		{9, 2, 6, 3},
+		{0, 3, 1, 0},
 	}), 35)
 }
 

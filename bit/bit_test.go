@@ -2,8 +2,9 @@ package bit
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHammingDistance(t *testing.T) {
@@ -19,8 +20,8 @@ func TestFindRepeatedDnaSequences(t *testing.T) {
 }
 
 func TestHammingDistance2(t *testing.T) {
-	var nums uint32 = 11
-	fmt.Println(HammingWeight(nums))
+	assert.Equal(t, HammingWeight(0x3), 2)
+	assert.Equal(t, HammingWeight(0x10), 1)
 }
 
 func Test_swapNumbers(t *testing.T) {
@@ -28,6 +29,6 @@ func Test_swapNumbers(t *testing.T) {
 }
 
 func Test_getSum(t *testing.T) {
-	assert.Equal(t, getSum(1, 2), 3)
+	//assert.Equal(t, getSum(1, 2), 3)
 	assert.Equal(t, getSum(-2, 3), 1)
 }

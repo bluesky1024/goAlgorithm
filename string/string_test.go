@@ -2,9 +2,9 @@ package string
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUniqueMorseRepresentations(t *testing.T) {
@@ -45,9 +45,8 @@ func TestReverseString(t *testing.T) {
 
 func TestReverseWords(t *testing.T) {
 	s := "Let's take LeetCode contest"
-	fmt.Println(s[3:len(s)])
-	return
-	fmt.Println(ReverseWords(s))
+	fmt.Println(s[3:])
+	t.Log(ReverseWords(s))
 }
 
 func TestCheckPalindrome(t *testing.T) {
@@ -106,4 +105,9 @@ func Test_countAndSay(t *testing.T) {
 func Test_simplifyPath(t *testing.T) {
 	path := "/a/./b/../../c"
 	t.Log(simplifyPath(path))
+}
+
+func Test_ReverseNum(t *testing.T) {
+	assert.Equal(t, ReverseNum(1516000), "0006151")
+	assert.Equal(t, ReverseNum(0), "0")
 }
