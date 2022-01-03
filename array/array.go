@@ -1685,3 +1685,76 @@ func missingNumber(nums []int) int {
 	}
 	return res
 }
+
+/*问题*/
+/*
+给你一个长度为 n 的整数数组 nums 和 一个目标值 target。请你从 nums 中选出三个整数，使它们的和与 target 最接近。
+
+返回这三个数的和。
+
+假定每组输入只存在恰好一个解。
+
+
+
+示例 1：
+
+输入：nums = [-1,2,1,-4], target = 1
+输出：2
+解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+示例 2：
+
+输入：nums = [0,0,0], target = 1
+输出：0
+
+
+提示：
+
+3 <= nums.length <= 1000
+-1000 <= nums[i] <= 1000
+-104 <= target <= 104
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/3sum-closest
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+/*思路*/
+/*
+1. 排序
+2. 固定第一个数，其他数从该数后面选
+3. 双指针从头和尾开始遍历，从外往内遍历进行剪支
+4. 需要注意：以1 2 3 4 5 6 7 8 9 为例
+   2+8 可能大于 3+4 也可能 小于 5+6
+   也就是，不能直接在发现数据差绝对值变大之后就停止遍历
+*/
+func threeSumClosest(nums []int, target int) int {
+	// 排序
+	oriSort.Ints(nums)
+	res := nums[0] + nums[1] + nums[2]
+	// 遍历第一个数字
+	for i := 0; i < len(nums)-2; i++ {
+		head := i + 1
+		tail := len(nums) - 1
+		curSum := 0
+		for head != tail {
+			curSum = nums[i] + nums[head] + nums[tail]
+			if math.Abs(float64(target-curSum))-math.Abs(float64(target-res)) < 0 {
+				res = curSum
+			}
+			// 如果相等，则直接命中target
+			if nums[head]+nums[tail] == target-nums[i] {
+				return target
+			}
+			// 如果小于 left,说明数小了
+			if nums[head]+nums[tail] < target-nums[i] {
+				head++
+				continue
+			}
+			// 如果大于 left,说明数大了
+			if nums[head]+nums[tail] > target-nums[i] {
+				tail--
+				continue
+			}
+		}
+	}
+	return res
+}

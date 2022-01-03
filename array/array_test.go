@@ -3167,3 +3167,10 @@ func Test_missingNumber(t *testing.T) {
 	assert.Equal(t, missingNumber([]int{0, 1}), 2)
 	assert.Equal(t, missingNumber([]int{9, 6, 4, 2, 3, 5, 7, 0, 1}), 8)
 }
+
+func Test_threeSumClosest(t *testing.T) {
+	assert.Equal(t, threeSumClosest([]int{-1, 2, 1, -4}, 1), 2)
+	assert.Equal(t, threeSumClosest([]int{0, 0, 0}, 1), 0)
+	assert.Equal(t, threeSumClosest([]int{1, 1, 1, 0}, -100), 2)
+	assert.Equal(t, threeSumClosest([]int{-55, -24, -18, -11, -7, -3, 4, 5, 6, 9, 11, 23, 33}, 0), 0)
+}
