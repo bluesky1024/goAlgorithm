@@ -60,49 +60,49 @@ func MyQueueConstructor() MyQueue {
 }
 
 /** Push element x to the back of queue. */
-func (this *MyQueue) Push(x int) {
-	this.listA.PushFront(x)
+func (q *MyQueue) Push(x int) {
+	q.listA.PushFront(x)
 }
 
 /** Removes the element from in front of queue and returns that element. */
-func (this *MyQueue) Pop() int {
-	if this.listB.Len() != 0 {
-		res := this.listB.Front().Value.(int)
-		this.listB.Remove(this.listB.Front())
+func (q *MyQueue) Pop() int {
+	if q.listB.Len() != 0 {
+		res := q.listB.Front().Value.(int)
+		q.listB.Remove(q.listB.Front())
 		return res
 	}
 
-	for this.listA.Len() > 0 {
-		temp := this.listA.Front().Value.(int)
-		this.listA.Remove(this.listA.Front())
-		this.listB.PushFront(temp)
+	for q.listA.Len() > 0 {
+		temp := q.listA.Front().Value.(int)
+		q.listA.Remove(q.listA.Front())
+		q.listB.PushFront(temp)
 	}
 
-	res := this.listB.Front().Value.(int)
-	this.listB.Remove(this.listB.Front())
+	res := q.listB.Front().Value.(int)
+	q.listB.Remove(q.listB.Front())
 	return res
 }
 
 /** Get the front element. */
-func (this *MyQueue) Peek() int {
-	if this.listB.Len() != 0 {
-		res := this.listB.Front().Value.(int)
+func (q *MyQueue) Peek() int {
+	if q.listB.Len() != 0 {
+		res := q.listB.Front().Value.(int)
 		return res
 	}
 
-	for this.listA.Len() > 0 {
-		temp := this.listA.Front().Value.(int)
-		this.listA.Remove(this.listA.Front())
-		this.listB.PushFront(temp)
+	for q.listA.Len() > 0 {
+		temp := q.listA.Front().Value.(int)
+		q.listA.Remove(q.listA.Front())
+		q.listB.PushFront(temp)
 	}
 
-	res := this.listB.Front().Value.(int)
+	res := q.listB.Front().Value.(int)
 	return res
 }
 
 /** Returns whether the queue is empty. */
-func (this *MyQueue) Empty() bool {
-	return this.listA.Len() == 0 && this.listB.Len() == 0
+func (q *MyQueue) Empty() bool {
+	return q.listA.Len() == 0 && q.listB.Len() == 0
 }
 
 /*问题*/
@@ -144,17 +144,17 @@ func MyStackConstructor() MyStack {
 }
 
 /** Push element x onto stack. */
-func (this *MyStack) Push(x int) {
-	this.listA.PushBack(x)
+func (s *MyStack) Push(x int) {
+	s.listA.PushBack(x)
 }
 
 /** Removes the element on top of the stack and returns that element. */
-func (this *MyStack) Pop() int {
-	NotEmptyList := this.listA
-	EmptyList := this.listB
-	if this.listA.Len() == 0 {
-		NotEmptyList = this.listB
-		EmptyList = this.listA
+func (s *MyStack) Pop() int {
+	NotEmptyList := s.listA
+	EmptyList := s.listB
+	if s.listA.Len() == 0 {
+		NotEmptyList = s.listB
+		EmptyList = s.listA
 	}
 
 	for NotEmptyList.Len() > 0 {
@@ -170,12 +170,12 @@ func (this *MyStack) Pop() int {
 }
 
 /** Get the top element. */
-func (this *MyStack) Top() int {
-	NotEmptyList := this.listA
-	EmptyList := this.listB
-	if this.listA.Len() == 0 {
-		NotEmptyList = this.listB
-		EmptyList = this.listA
+func (s *MyStack) Top() int {
+	NotEmptyList := s.listA
+	EmptyList := s.listB
+	if s.listA.Len() == 0 {
+		NotEmptyList = s.listB
+		EmptyList = s.listA
 	}
 
 	for NotEmptyList.Len() > 0 {
@@ -192,8 +192,8 @@ func (this *MyStack) Top() int {
 }
 
 /** Returns whether the stack is empty. */
-func (this *MyStack) Empty() bool {
-	return this.listA.Len() == 0 && this.listB.Len() == 0
+func (s *MyStack) Empty() bool {
+	return s.listA.Len() == 0 && s.listB.Len() == 0
 }
 
 /*问题*/
@@ -252,14 +252,14 @@ func MyHashMapConstructor() MyHashMap {
 }
 
 /** value will always be non-negative. */
-func (this *MyHashMap) Put(key int, value int) {
+func (h *MyHashMap) Put(key int, value int) {
 	ind := key % 10000
-	if this.hashMap[ind] == nil {
-		this.hashMap[ind] = list.New()
+	if h.hashMap[ind] == nil {
+		h.hashMap[ind] = list.New()
 	}
 
 	//遍历整个list，如果存在该key，就更新，不存在就pushback
-	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+	for e := h.hashMap[ind].Front(); e != nil; e = e.Next() {
 		if e.Value.(SingleHashKV).key == key {
 			e.Value = SingleHashKV{
 				key: key,
@@ -268,19 +268,19 @@ func (this *MyHashMap) Put(key int, value int) {
 			return
 		}
 	}
-	this.hashMap[ind].PushBack(SingleHashKV{
+	h.hashMap[ind].PushBack(SingleHashKV{
 		key: key,
 		val: value,
 	})
 }
 
 /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
-func (this *MyHashMap) Get(key int) int {
+func (h *MyHashMap) Get(key int) int {
 	ind := key % 10000
-	if this.hashMap[ind] == nil {
+	if h.hashMap[ind] == nil {
 		return -1
 	}
-	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+	for e := h.hashMap[ind].Front(); e != nil; e = e.Next() {
 		if e.Value.(SingleHashKV).key == key {
 			return e.Value.(SingleHashKV).val
 		}
@@ -289,14 +289,14 @@ func (this *MyHashMap) Get(key int) int {
 }
 
 /** Removes the mapping of the specified value key if this map contains a mapping for the key */
-func (this *MyHashMap) Remove(key int) {
+func (h *MyHashMap) Remove(key int) {
 	ind := key % 10000
-	if this.hashMap[ind] == nil {
+	if h.hashMap[ind] == nil {
 		return
 	}
-	for e := this.hashMap[ind].Front(); e != nil; e = e.Next() {
+	for e := h.hashMap[ind].Front(); e != nil; e = e.Next() {
 		if e.Value.(SingleHashKV).key == key {
-			this.hashMap[ind].Remove(e)
+			h.hashMap[ind].Remove(e)
 		}
 	}
 }
@@ -357,11 +357,11 @@ func ConstructorMyLinkedList() MyLinkedList {
 	}
 }
 
-func (this *MyLinkedList) Print() {
-	if this.nodes == nil {
+func (l *MyLinkedList) Print() {
+	if l.nodes == nil {
 		fmt.Println("empty list")
 	}
-	cur := this.nodes
+	cur := l.nodes
 	for {
 		if cur == nil {
 			break
@@ -372,11 +372,11 @@ func (this *MyLinkedList) Print() {
 }
 
 /** Get the value of the index-th node in the linked list. If the index is invalid, return -1. */
-func (this *MyLinkedList) Get(index int) int {
-	if index < 0 || index+1 > this.len {
+func (l *MyLinkedList) Get(index int) int {
+	if index < 0 || index+1 > l.len {
 		return -1
 	}
-	cur := this.nodes
+	cur := l.nodes
 	for {
 		if cur == nil {
 			break
@@ -391,10 +391,10 @@ func (this *MyLinkedList) Get(index int) int {
 }
 
 /** Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list. */
-func (this *MyLinkedList) AddAtHead(val int) {
-	this.len++
-	if this.nodes == nil {
-		this.nodes = &MyLinkedNode{
+func (l *MyLinkedList) AddAtHead(val int) {
+	l.len++
+	if l.nodes == nil {
+		l.nodes = &MyLinkedNode{
 			val:  val,
 			next: nil,
 		}
@@ -402,23 +402,22 @@ func (this *MyLinkedList) AddAtHead(val int) {
 	}
 	newNode := &MyLinkedNode{
 		val:  val,
-		next: this.nodes,
+		next: l.nodes,
 	}
-	this.nodes = newNode
-	return
+	l.nodes = newNode
 }
 
 /** Append a node of value val to the last element of the linked list. */
-func (this *MyLinkedList) AddAtTail(val int) {
-	this.len++
-	if this.nodes == nil {
-		this.nodes = &MyLinkedNode{
+func (l *MyLinkedList) AddAtTail(val int) {
+	l.len++
+	if l.nodes == nil {
+		l.nodes = &MyLinkedNode{
 			val:  val,
 			next: nil,
 		}
 		return
 	}
-	cur := this.nodes
+	cur := l.nodes
 	for {
 		if cur.next == nil {
 			cur.next = &MyLinkedNode{
@@ -432,11 +431,11 @@ func (this *MyLinkedList) AddAtTail(val int) {
 }
 
 /** Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted. */
-func (this *MyLinkedList) AddAtIndex(index int, val int) {
-	this.len++
-	if this.nodes == nil {
+func (l *MyLinkedList) AddAtIndex(index int, val int) {
+	l.len++
+	if l.nodes == nil {
 		if index == 0 {
-			this.nodes = &MyLinkedNode{
+			l.nodes = &MyLinkedNode{
 				val:  val,
 				next: nil,
 			}
@@ -448,12 +447,12 @@ func (this *MyLinkedList) AddAtIndex(index int, val int) {
 		next: nil,
 	}
 	var last *MyLinkedNode = nil
-	cur := this.nodes
+	cur := l.nodes
 	for {
 		if index == 0 {
 			if last == nil {
 				newNode.next = cur
-				this.nodes = newNode
+				l.nodes = newNode
 			} else {
 				newNode.next = cur
 				last.next = newNode
@@ -473,17 +472,17 @@ func (this *MyLinkedList) AddAtIndex(index int, val int) {
 }
 
 /** Delete the index-th node in the linked list, if the index is valid. */
-func (this *MyLinkedList) DeleteAtIndex(index int) {
-	this.len--
-	if this.nodes == nil {
+func (l *MyLinkedList) DeleteAtIndex(index int) {
+	l.len--
+	if l.nodes == nil {
 		return
 	}
 	var last *MyLinkedNode = nil
-	cur := this.nodes
+	cur := l.nodes
 	for {
 		if index == 0 {
 			if last == nil {
-				this.nodes = nil
+				l.nodes = nil
 			} else {
 				last.next = cur.next
 			}
@@ -552,10 +551,8 @@ func CheckTimerTicker() {
 		case <-time1.C:
 			fmt.Println("carry finish")
 			return
-			break
 		case a := <-time.After(1 * time.Second):
 			fmt.Println("time after", a)
-			break
 		}
 	}
 }
@@ -565,14 +562,12 @@ func CheckTimerTicker() {
 type TimeTriggerFunc func(a int) int
 
 func SetTimeoutFunc(triggerFunc TimeTriggerFunc, t time.Duration, a int) {
-	ctx, _ := context.WithTimeout(context.Background(), t)
+	ctx, cancel := context.WithTimeout(context.Background(), t)
+	defer cancel()
 	go func() {
-		select {
-		case <-ctx.Done():
-			b := triggerFunc(a)
-			fmt.Println(b)
-			break
-		}
+		<-ctx.Done()
+		b := triggerFunc(a)
+		fmt.Println(b)
 	}()
 }
 
@@ -608,7 +603,6 @@ func CheckDefer() {
 
 	fmt.Println("aaa")
 	panic("panic trigger")
-	return
 }
 
 /*问题*/
@@ -1321,7 +1315,6 @@ func (l *LRUCache) Put(key int, value int) {
 	}
 	node.ele = l.orderL.PushFront(node)
 	l.data[key] = node
-	return
 }
 
 func (l *LRUCache) delBackEle() {
