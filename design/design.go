@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -1331,4 +1332,62 @@ func (l *LRUCache) delBackEle() {
 	node := back.Value.(*lruNode)
 	delete(l.data, node.key)
 	l.orderL.Remove(back)
+}
+
+/*
+
+题目描述
+假设有打乱顺序的一群人站成一个队列。 每个人由一个整数对(h, k)表示，其中h是这个人的身高，k是排在这个人前面且身高大于或等于h的人数。 编写一个算法来重建这个队列。
+注意：
+总人数少于1100人。
+
+示例
+输入:
+[[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+输出:
+[[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+
+先从小到大排序，从4开始找位置
+44 50 52 61 70 71
+
+_ _ _ _ _ _
+5 7 5 6 4 7
+
+*/
+
+type mPair struct {
+	h int
+	k int
+}
+
+func rebuild(pairs []mPair) []mPair {
+	sort.Slice(pairs, func(i, j int) bool {
+		if pairs[i].h < pairs[j].h {
+			return true
+		}
+		if pairs[i].h > pairs[j].h {
+			return false
+		}
+		return pairs[i].k < pairs[j].k
+	})
+	res := make([]mPair, len(pairs))
+	for _, p := range pairs {
+		cur := 0
+		// 找到p的k对应的位置
+		for i, pp := range res {
+			if pp.h == 0 {
+				if cur == p.k {
+					res[i] = p
+					break
+				}
+				cur++
+				continue
+			}
+
+			if pp.h >= p.h {
+				cur++
+			}
+		}
+	}
+	return res
 }

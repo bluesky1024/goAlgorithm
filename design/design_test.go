@@ -2,9 +2,10 @@ package design
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMyStack(t *testing.T) {
@@ -189,4 +190,15 @@ func TestLRUCache(t *testing.T) {
 	c.Put(4, 4)
 	assert.Equal(t, c.Get(4), 4)
 	assert.Equal(t, c.Get(1), -1)
+}
+
+// [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+func Test_rebuild(t *testing.T) {
+	pair := []mPair{
+		{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2},
+	}
+	newPair := rebuild(pair)
+	assert.Equal(t, newPair, []mPair{
+		{5, 0}, {7, 0}, {5, 2}, {6, 1}, {4, 4}, {7, 1},
+	})
 }
