@@ -111,3 +111,11 @@ func Test_ReverseNum(t *testing.T) {
 	assert.Equal(t, ReverseNum(1516000), "0006151")
 	assert.Equal(t, ReverseNum(0), "0")
 }
+
+func Test_isScramble(t *testing.T) {
+	// assert.True(t, isScramble("great", "rgeat"))
+	// assert.False(t, isScramble("abcde", "caebd"))
+	// assert.True(t, isScramble("a", "a"))
+
+	assert.True(t, isScramble("eebaacbcbcadaaedceaaacadccd", "eadcaacabaddaceacbceaabeccd"))
+}

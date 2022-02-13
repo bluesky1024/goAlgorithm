@@ -3174,3 +3174,9 @@ func Test_threeSumClosest(t *testing.T) {
 	assert.Equal(t, threeSumClosest([]int{1, 1, 1, 0}, -100), 2)
 	assert.Equal(t, threeSumClosest([]int{-55, -24, -18, -11, -7, -3, 4, 5, 6, 9, 11, 23, 33}, 0), 0)
 }
+
+func Test_search(t *testing.T) {
+	assert.Equal(t, search([]int{4, 5, 6, 7, 0, 1, 2}, 0), 4)
+	assert.Equal(t, search([]int{4, 5, 6, 7, 0, 1, 2}, 3), -1)
+	assert.Equal(t, search([]int{1}, 0), -1)
+}
