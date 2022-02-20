@@ -3180,3 +3180,8 @@ func Test_search(t *testing.T) {
 	assert.Equal(t, search([]int{4, 5, 6, 7, 0, 1, 2}, 3), -1)
 	assert.Equal(t, search([]int{1}, 0), -1)
 }
+
+func Test_uniquePaths(t *testing.T) {
+	assert.Equal(t, uniquePathsV1(2, 2), 2)
+	assert.Equal(t, uniquePathsV2(19, 13), 86493225)
+}
