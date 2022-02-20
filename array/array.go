@@ -1879,17 +1879,8 @@ func search(nums []int, target int) int {
 */
 /*思路*/
 /*
-1 2 3
-4 5 6
-
-1   3
-4 5 6
-
-1 2 3
-  5 6
-
-
-
+1. 递归
+2. 排列组合
 */
 func uniquePathsV1(m int, n int) int {
 	if m == 1 || n == 1 {
