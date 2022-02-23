@@ -1222,3 +1222,43 @@ func isScramble(s1 string, s2 string) bool {
 	}
 	return false
 }
+
+func reverseOnlyLetters(s string) string {
+	isLetter := func(r rune) bool {
+		if r >= 'a' && r <= 'z' {
+			return true
+		}
+		if r >= 'A' && r <= 'Z' {
+			return true
+		}
+		return false
+	}
+	chs := make([]rune, len(s))
+	head := 0
+	tail := len(s) - 1
+	for {
+		// 找到下一个字母位置
+		for head < len(s) {
+			if isLetter(rune(s[head])) {
+				break
+			}
+			chs[head] = rune(s[head])
+			head++
+		}
+		for tail >= 0 {
+			if isLetter(rune(s[tail])) {
+				break
+			}
+			chs[tail] = rune(s[tail])
+			tail--
+		}
+		if head >= tail {
+			break
+		}
+		chs[head] = rune(s[tail])
+		chs[tail] = rune(s[head])
+		head++
+		tail--
+	}
+	return string(chs)
+}

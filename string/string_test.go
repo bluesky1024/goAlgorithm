@@ -113,9 +113,13 @@ func Test_ReverseNum(t *testing.T) {
 }
 
 func Test_isScramble(t *testing.T) {
-	// assert.True(t, isScramble("great", "rgeat"))
-	// assert.False(t, isScramble("abcde", "caebd"))
-	// assert.True(t, isScramble("a", "a"))
+	assert.True(t, isScramble("great", "rgeat"))
+	assert.False(t, isScramble("abcde", "caebd"))
+	assert.True(t, isScramble("a", "a"))
+	//assert.True(t, isScramble("eebaacbcbcadaaedceaaacadccd", "eadcaacabaddaceacbceaabeccd"))
+}
 
-	assert.True(t, isScramble("eebaacbcbcadaaedceaaacadccd", "eadcaacabaddaceacbceaabeccd"))
+func Test_reverseOnlyLetters(t *testing.T) {
+	assert.Equal(t, reverseOnlyLetters("ab-cd"), "dc-ba")
+	assert.Equal(t, reverseOnlyLetters("abc-dd-efghi"), "ihg-fe-ddcba")
 }
