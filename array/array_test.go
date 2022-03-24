@@ -3185,3 +3185,7 @@ func Test_uniquePaths(t *testing.T) {
 	assert.Equal(t, uniquePathsV1(2, 2), 2)
 	assert.Equal(t, uniquePathsV2(19, 13), 86493225)
 }
+
+func Test_optimalDivision(t *testing.T) {
+	assert.Equal(t, optimalDivision([]int{1000, 100, 10, 2}), "1000/(100/10/2)")
+}
