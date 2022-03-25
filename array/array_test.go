@@ -3189,3 +3189,17 @@ func Test_uniquePaths(t *testing.T) {
 func Test_optimalDivision(t *testing.T) {
 	assert.Equal(t, optimalDivision([]int{1000, 100, 10, 2}), "1000/(100/10/2)")
 }
+func Test_permute(t *testing.T) {
+	assert.ElementsMatch(t, permute([]int{1, 2, 3}),
+		[][]int{{1, 2, 3}, {1, 3, 2}, {2, 1, 3}, {2, 3, 1}, {3, 1, 2}, {3, 2, 1}})
+
+	assert.ElementsMatch(t, permute([]int{0, 1}),
+		[][]int{{0, 1}, {1, 0}})
+
+	assert.ElementsMatch(t, permute([]int{1}), [][]int{{1}})
+}
+
+func Test_permuteUnique(t *testing.T) {
+	assert.ElementsMatch(t, permuteUnique([]int{1, 1, 2}),
+		[][]int{{1, 1, 2}, {1, 2, 1}, {2, 1, 1}})
+}
